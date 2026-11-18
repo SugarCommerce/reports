@@ -314,7 +314,10 @@ Before the report is registered, filter its configuration. The hook is
 `sugarcommerce_reports_register` for a plain Composer install; in a copy
 prefixed by Strauss it carries the prefix
 (`myplugin_sugarcommerce_reports_register`), and `Runtime::hook( 'register' )`
-gives the name either way.
+gives the name either way. A prefix that itself starts `SugarCommerce\` keeps
+all its segments -- `SugarCommerce\Playground\Vendor\` gives
+`sugarcommerce_playground_vendor_sugarcommerce_reports_register` -- so a
+plugin of the family is never taken for an unprefixed copy.
 
 ```php
 add_filter( 'sugarcommerce_reports_register', function ( array $config, string $id ): array {
