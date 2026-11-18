@@ -213,9 +213,8 @@ trait ExportEndpoints {
 			header( 'Content-Type: text/csv; charset=utf-8' );
 			header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
 			header( 'Content-Length: ' . filesize( $real ) );
-			header( 'Cache-Control: no-store, no-cache, must-revalidate' );
-			header( 'Pragma: no-cache' );
-			header( 'Expires: 0' );
+			// Core's no-cache headers (filterable through nocache_headers).
+			nocache_headers();
 
 			readfile( $real );
 

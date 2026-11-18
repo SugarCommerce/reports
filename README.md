@@ -382,6 +382,7 @@ keeps its name; what a screen shows is the same. It now builds on
 | CSV cells defused by the library's own `fputcsv()` wrapper | written by `SugarCommerce\Text\Csv`: the same apostrophe on a formula, numbers left alone, and a cell with a space or a semicolon quoted |
 | `arraypress_enqueue_composer_style()` / `_script()` | `SugarCommerce\Plugin\Assets::enqueue_style()` / `enqueue_script()` |
 | text domain `arraypress` | `sugarcommerce` |
+| the export download's own `Cache-Control`, `Pragma` and `Expires` headers | core's `nocache_headers()` (and its `nocache_headers` filter) |
 
 Every `reports-*` CSS class, body class and data attribute, and the
 `date_preset`, `date_start`, `date_end`, `tab` and `filter_*` query
