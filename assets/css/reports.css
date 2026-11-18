@@ -1,0 +1,2266 @@
+/**
+ * Reports Admin Styles
+ *
+ * @package SugarCommerce\Reports
+ */
+
+/* ==========================================================================
+   General Wrapper
+   ========================================================================== */
+
+.reports-wrap {
+    margin-right: 20px;
+}
+
+.reports-wrap * {
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Notices Container
+   ========================================================================== */
+
+.reports-notices {
+    margin: 20px 0;
+    clear: both;
+}
+
+.reports-notices:empty {
+    display: none;
+    margin: 0;
+}
+
+/* ==========================================================================
+   Responsive - Mobile (Dropdown Menu)
+   ========================================================================== */
+
+@media screen and (max-width: 600px) {
+    /* Filter bar adjustments for mobile */
+    .reports-filter-bar {
+        padding: 12px 15px;
+    }
+
+    /* The bar's controls each take a full line: a filter at one width, the
+       date range at another and Refresh hanging off the right is three
+       ragged edges on a screen with room for one. */
+    .reports-controls-bar,
+    .reports-controls-bar-start,
+    .reports-controls-bar-end,
+    .reports-controls-bar .reports-filter-bar,
+    .reports-controls-bar .reports-filter-form,
+    .reports-controls-bar .reports-filter-fields,
+    .reports-controls-bar .reports-filter-field,
+    .reports-controls-bar .reports-refresh-controls {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .reports-controls-bar {
+        box-sizing: border-box;
+        padding: 10px 12px 12px;
+    }
+
+    .reports-controls-bar .button {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
+    /* Two tiles to a row: a figure and its label fit in half a phone, and
+       six tiles one above another is two screens before the chart. */
+    .reports-tiles-grid,
+    .reports-tiles-grid.reports-tiles-columns-2,
+    .reports-tiles-grid.reports-tiles-columns-3,
+    .reports-tiles-grid.reports-tiles-columns-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .reports-tile {
+        padding: 14px;
+    }
+
+}
+
+/* ==========================================================================
+   Controls Bar
+
+   The row under the tabs: date range and filters on the left, refresh on the
+   right. Everything that changes what is on screen, in one line, immediately
+   under the tabs it applies to — which is where a list table puts its
+   filters and where every analytics screen worth using puts its date range.
+
+   These were in the header's actions slot before, which centred them under
+   the title and stacked them one above the other.
+   ========================================================================== */
+
+.reports-controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 12px;
+
+    /* Continuous with the header above it: same white, no rule between, and
+       the bottom border is the one edge the whole band shares. Three
+       stacked bands each with their own border and their own gap is what
+       made the top of the page read as three unrelated screens. */
+    padding: 10px 20px 12px;
+    background: #fff;
+    border-bottom: 1px solid #c3c4c7;
+}
+
+.reports-controls-bar-start,
+.reports-controls-bar-end {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+/* The right-hand pair keeps its shape when the filters wrap past it. */
+.reports-controls-bar-end {
+    margin-left: auto;
+}
+
+/* Inside the bar the filter form is a row among others, not a bar of its
+   own — it keeps its own rule for the screens that still render it alone. */
+.reports-controls-bar .reports-filter-bar {
+    padding: 0;
+    background: none;
+    border: 0;
+}
+
+/* ==========================================================================
+   Filter Bar
+   ========================================================================== */
+
+.reports-filter-bar {
+    padding: 12px 20px;
+    background: #f6f7f7;
+    border-top: 1px solid #dcdcde;
+}
+
+.reports-filter-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.reports-filter-fields {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+/* One row. These used to stack a small-caps label above each control, which
+   made the bar twice as tall as the things in it and read as a form rather
+   than a toolbar. The label is still there — screen-reader-text — because a
+   control with no accessible name cannot be identified. */
+.reports-filter-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.reports-filter-field select,
+.reports-filter-field input[type="text"] {
+    min-width: 150px;
+    max-width: none;
+    height: 30px;
+    margin: 0;
+}
+
+.reports-filter-field.reports-filter-checkbox {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+}
+
+.reports-filter-field.reports-filter-checkbox label {
+    text-transform: none;
+    font-size: 13px;
+    font-weight: 400;
+    color: #1d2327;
+}
+
+.reports-filter-submit {
+    height: 32px;
+}
+
+/* With the script running a filter applies as it is chosen, so there is
+   nothing left for the button to do. It stays in the markup for a browser
+   without the script, and for a form with something to type into. */
+.reports-filter-form--auto .reports-filter-submit {
+    display: none;
+}
+
+.reports-filter-form--busy {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   Date Picker Dropdown
+   ========================================================================== */
+
+.reports-date-picker {
+    position: relative;
+}
+
+/* Everything about how this looks is core's, because it carries .button.
+   It used to restate the height, padding, border, radius, colour and
+   background itself -- at 36px, against a core button that is 40px in this
+   version of WordPress -- so it stood a head shorter than the Filter button
+   beside it and drew a grey border where core draws a blue one. */
+
+.reports-date-picker-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    background: #fff;
+    border: 1px solid #e3e3e6;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(17, 18, 20, 0.14);
+    z-index: 100000;
+    min-width: 200px;
+}
+
+.reports-date-picker-presets {
+    padding: 8px 0;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.reports-date-preset {
+    display: block;
+    width: 100%;
+    padding: 8px 16px;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    color: #1d2327;
+}
+
+.reports-date-preset:hover {
+    background: #f0f0f1;
+}
+
+.reports-date-preset.active {
+    background: var(--wp-admin-theme-color, #2271b1);
+    color: #fff;
+}
+
+.reports-date-picker-divider {
+    height: 1px;
+    background: #c3c4c7;
+    margin: 8px 0;
+}
+
+.reports-date-picker-custom {
+    padding: 16px;
+    border-top: 1px solid #c3c4c7;
+}
+
+.reports-date-picker-custom-row {
+    margin-bottom: 12px;
+}
+
+.reports-date-picker-custom-row label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #646970;
+    margin-bottom: 4px;
+}
+
+.reports-date-picker-custom-row input[type="date"] {
+    width: 100%;
+}
+
+.reports-date-picker-custom-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.reports-date-picker-custom-actions .button {
+    flex: 1;
+}
+
+/* ==========================================================================
+   Refresh Controls
+   ========================================================================== */
+
+.reports-refresh-controls {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.reports-last-updated {
+    font-size: 12px;
+    color: #646970;
+}
+
+/* Refreshing is core's .updating-message: the spinning glyph, its colour and
+   its reduced-motion handling are all already written, in common.css, on the
+   class core puts on a plugin's Update button. */
+
+/* Loading overlay for components during refresh */
+.reports-component-refreshing {
+    position: relative;
+    pointer-events: none;
+}
+
+.reports-component-refreshing::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 10;
+}
+
+/* ==========================================================================
+   Layout: the sections across the top, or down the side
+
+   Which one a report gets is decided in PHP, by counting its sections, and
+   said on the body as .reports-layout--tabs or .reports-layout--sidebar.
+   ========================================================================== */
+
+/* The tab bar is one line. The kit wraps it, which is right for the three
+   tabs a settings screen has and wrong for a report that other plugins add
+   sections to: a second, shorter line of tabs reads as a second set of
+   them. So it stays on one line and scrolls sideways when it has to.
+
+   Aligned to the start, with the centring done by the first and last tab's
+   margins further down. A centred row that overflows is cut off at both
+   ends and can only be scrolled to one of them.
+
+   The four backgrounds are the edge that says there is more: a shadow at
+   each end, and over each a patch of white that scrolls with the tabs. At
+   the start of the row the patch is sitting on the left shadow, at the end
+   on the right one, and where everything fits it covers both. No script,
+   and nothing to keep in step with the scroll position. */
+.reports .field-kit__page-tabs {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    background:
+        linear-gradient(to right, #fff 40%, rgba(255, 255, 255, 0)) left center / 36px 100% no-repeat local,
+        linear-gradient(to left, #fff 40%, rgba(255, 255, 255, 0)) right center / 36px 100% no-repeat local,
+        radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0)) left center / 12px 100% no-repeat scroll,
+        radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0)) right center / 12px 100% no-repeat scroll;
+}
+
+.reports .field-kit__page-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+/* A tab keeps its width and its one line; it is the row that gives. The
+   focus outline is drawn inside the tab, since a row that scrolls clips
+   whatever is drawn outside it. */
+.reports .field-kit__page-tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    outline-offset: -1px;
+}
+
+/* Centred while there is room, as the kit has it. An auto margin takes up
+   free space and is nothing when there is none, so the same rule is the
+   start-aligned row once the tabs overflow. Not on a narrow screen, where
+   the kit starts them at the left. */
+@media screen and (min-width: 783px) {
+    .reports .field-kit__page-tab:first-child {
+        margin-inline-start: auto;
+    }
+
+    .reports .field-kit__page-tab:last-child {
+        margin-inline-end: auto;
+    }
+}
+
+/* The sidebar and everything beside it. The second column is allowed to be
+   narrower than its content wants -- a wide table scrolls inside its own
+   card, and without the zero it would push the column, and the page, out. */
+.reports-shell {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    align-items: start;
+    gap: 20px;
+}
+
+/* With the sections down the side the page is an ordinary screen: core's
+   own title at the top left, where the list screens beside it in the menu
+   have theirs, and the filters in a card of their own under it rather than
+   a band across the window. */
+.reports-page .reports-controls-bar {
+    margin: 14px 0 16px;
+    padding: 10px 12px;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+}
+
+.reports-main {
+    min-width: 0;
+}
+
+/* A card like the ones it sits beside. It stays where it is while a long
+   report scrolls past, under the admin bar, and scrolls by itself if it is
+   ever taller than the window. */
+.reports-sidebar {
+    position: sticky;
+    top: calc(var(--wp-admin--admin-bar--height, 32px) + 16px);
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+}
+
+.reports-sidebar-scroll {
+    max-height: calc(100vh - var(--wp-admin--admin-bar--height, 32px) - 34px);
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.reports-sidebar-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.reports-sidebar-item {
+    margin: 0;
+}
+
+/* A group's heading: small and quiet, a label for the list under it. */
+.reports-sidebar-heading {
+    margin: 16px 0 4px;
+    padding: 0 10px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #646970;
+}
+
+.reports-sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #2c3338;
+    text-decoration: none;
+}
+
+.reports-sidebar-link:hover {
+    color: var(--wp-admin-theme-color, #2271b1);
+    background: #f6f7f7;
+}
+
+/* Inside the link, for the reason the tabs have: the list can scroll. */
+.reports-sidebar-link:focus {
+    color: var(--wp-admin-theme-color, #2271b1);
+    box-shadow: none;
+    outline: 2px solid var(--wp-admin-theme-color, #2271b1);
+    outline-offset: -2px;
+}
+
+/* The current section: a filled row, the label in bold and the icon in the
+   theme colour. An icon is a Dashicon's span or an inline SVG
+   (`heroicons-outline:key`); both are 20px, the SVG by its attributes. */
+.reports-sidebar-link--current {
+    font-weight: 600;
+    color: #1d2327;
+    background: #f0f0f1;
+}
+
+.reports-sidebar-icon {
+    flex: 0 0 auto;
+    color: #787c82;
+}
+
+/* The space an icon would take, for a section without one in a list where
+   others have them, so every label starts on the same line down the page. */
+.reports-sidebar-icon--none {
+    width: 20px;
+}
+
+.reports-sidebar-link--current .reports-sidebar-icon {
+    color: var(--wp-admin-theme-color, #2271b1);
+}
+
+/* A label too long for the column goes onto a second line under itself. */
+.reports-sidebar-label {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+/* On a narrow screen a column of links beside the report leaves the report
+   half a phone. The same links become one row above it that scrolls
+   sideways, each a pill, with the same shadowed edges the tab bar has. The
+   headings stay, in line, as the break between one group and the next. */
+@media screen and (max-width: 782px) {
+    .reports-shell {
+        display: block;
+    }
+
+    .reports-sidebar {
+        position: static;
+        margin-bottom: 12px;
+    }
+
+    .reports-sidebar-scroll {
+        position: static;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        max-height: none;
+        padding: 10px 12px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        background:
+            linear-gradient(to right, #fff 40%, rgba(255, 255, 255, 0)) left center / 36px 100% no-repeat local,
+            linear-gradient(to left, #fff 40%, rgba(255, 255, 255, 0)) right center / 36px 100% no-repeat local,
+            radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0)) left center / 12px 100% no-repeat scroll,
+            radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0)) right center / 12px 100% no-repeat scroll;
+    }
+
+    .reports-sidebar-scroll::-webkit-scrollbar {
+        display: none;
+    }
+
+    .reports-sidebar-group,
+    .reports-sidebar-list {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .reports-sidebar-heading {
+        flex: 0 0 auto;
+        margin: 0;
+        padding: 0 2px 0 8px;
+        white-space: nowrap;
+    }
+
+    /* 36px tall: a thing to press with a thumb, in a row short enough to
+       leave the report most of the screen. */
+    .reports-sidebar-link {
+        min-height: 36px;
+        padding: 0 12px;
+        border: 1px solid #c3c4c7;
+        border-radius: 18px;
+        white-space: nowrap;
+    }
+
+    .reports-sidebar-link:hover {
+        background: none;
+    }
+
+    .reports-sidebar-link--current,
+    .reports-sidebar-link--current:hover,
+    .reports-sidebar-link--current:focus {
+        color: #fff;
+        background: var(--wp-admin-theme-color, #2271b1);
+        border-color: var(--wp-admin-theme-color, #2271b1);
+        box-shadow: none;
+    }
+
+    .reports-sidebar-link--current:focus {
+        outline-offset: 1px;
+    }
+
+    .reports-sidebar-link--current .reports-sidebar-icon {
+        color: #fff;
+    }
+
+    /* In a row there is no column of labels to keep straight. */
+    .reports-sidebar-icon--none {
+        display: none;
+    }
+
+    .reports-sidebar-label {
+        overflow-wrap: normal;
+    }
+}
+
+/* ==========================================================================
+   Content Area
+   ========================================================================== */
+
+.reports-content {
+    margin-top: 20px;
+}
+
+/* "Reports › Subscriptions": the section is part of the title but the
+   quieter part of it. */
+.reports-page-title-sep {
+    margin: 0 4px;
+    color: #a7aaad;
+}
+
+.reports-page-title-section {
+    color: #50575e;
+}
+
+/* Beside the sidebar the two cards start on the same line. */
+.reports-main > .reports-content {
+    margin-top: 0;
+}
+
+.reports-components {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* ==========================================================================
+   Tiles
+   ========================================================================== */
+
+.reports-tiles-wrapper {
+    /* The whole row, and no card of its own: each tile is already a card,
+       and a card of cards is a frame round a set of frames. The width is
+       what lets the grid inside it count columns -- as a flex child with
+       none, it measured itself at one tile wide and stacked them. */
+    width: 100%;
+    flex: 1 1 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+}
+
+.reports-tiles-wrapper-title {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.reports-tiles-grid {
+    display: grid;
+    gap: 16px;
+
+    /* The row, not a column of it. This is a flex child of
+       .reports-components, and a flex child is sized by its content — so the
+       grid measured itself against a width it had not been given, resolved
+       minmax(220px, 1fr) to one 220px column, and stacked every tile down the
+       left-hand side of an empty screen. */
+    width: 100%;
+
+    /* A grid with no template is one column, and one of the two places that
+       builds this markup adds no reports-tiles-columns-N class — so a set of
+       tiles rendered without an explicit column count came out stacked full
+       width, one per row. Auto-fit is the better default anyway: the column
+       count follows the width available rather than a number chosen once. */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.reports-tiles-grid.reports-tiles-columns-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.reports-tiles-grid.reports-tiles-columns-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.reports-tiles-grid.reports-tiles-columns-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.reports-tile {
+    background: linear-gradient(180deg, #fff 0%, #fcfcfd 100%);
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+    padding: 18px 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.reports-tile-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    flex-direction: row;
+}
+
+.reports-tile-icon {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: #f0f0f1;
+    color: #646970;
+    flex-shrink: 0;
+}
+
+.reports-tile-icon .sugarcommerce-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+.reports-tile-icon.icon-blue {
+    background: #e7f3ff;
+    color: var(--wp-admin-theme-color, #2271b1);
+}
+
+.reports-tile-icon.icon-green {
+    background: #e6f6e6;
+    color: #00a32a;
+}
+
+.reports-tile-icon.icon-red {
+    background: #fcf0f1;
+    color: #d63638;
+}
+
+.reports-tile-icon.icon-orange {
+    background: #fef8ee;
+    color: #dba617;
+}
+
+.reports-tile-icon.icon-purple {
+    background: #f3f1f7;
+    color: #8b5cf6;
+}
+
+.reports-tile-icon.icon-gray {
+    background: #f0f0f1;
+    color: #646970;
+}
+
+.reports-tile-label {
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #5c5f66;
+}
+
+.reports-tile-value {
+    font-size: 28px;
+    font-weight: 650;
+    color: #111214;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    font-variant-numeric: tabular-nums;
+    margin-top: 6px;
+}
+
+.reports-tile-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.reports-tile-change {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 8px 2px 5px;
+    border-radius: 999px;
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+}
+
+.reports-tile-change.change-up {
+    color: #0a6b2e;
+    background: #e7f6ec;
+}
+
+.reports-tile-change.change-down {
+    color: #b32d2e;
+    background: #fcebec;
+}
+
+.reports-tile-change:empty {
+    display: none;
+}
+
+.reports-tile-change.change-neutral {
+    color: #5c5f66;
+    padding-left: 8px;
+    background: #f0f0f2;
+}
+
+/* An outline icon drawn at 14px has a hairline stroke; at 2 it weighs what
+   the number beside it does, as the Dashicon it replaced did. */
+.reports-tile-change .sugarcommerce-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    stroke-width: 2;
+}
+
+.reports-tile-period {
+    font-size: 12px;
+    color: #8a8d93;
+}
+
+/* ==========================================================================
+   Charts
+   ========================================================================== */
+
+.reports-chart-wrapper {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 22px 24px 20px;
+}
+
+.reports-chart-header {
+    /* What the chart is, the figure and how it has moved on one line, then
+       a sentence. Laid out as a wrapping row so the figure and its chip sit
+       side by side rather than stacked into a column of four things. */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+    margin-bottom: 26px;
+}
+
+/* A headline figure in a chart's header, borrowed from the tiles. */
+.reports-chart-header .reports-tile-value {
+    margin: 0;
+    font-size: 34px;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+}
+
+.reports-chart-header .reports-tile-change {
+    padding: 3px 10px 3px 6px;
+    font-size: 12.5px;
+}
+
+.reports-chart-title {
+    /* A line of its own above the figure, and quiet: it names the chart,
+       and the figure under it is what is being read. */
+    flex: 0 0 100%;
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: #5c5f66;
+}
+
+.reports-chart-title .reports-chart-period {
+    font-weight: 400;
+    color: #646970;
+}
+
+.reports-chart-description {
+    flex: 0 0 100%;
+    margin: 2px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #8a8d93;
+}
+
+.reports-chart-container {
+    position: relative;
+    width: 100%;
+}
+
+.reports-chart-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* ==========================================================================
+   Notes
+   ========================================================================== */
+
+/* A sentence across the top of a tab, in a card of its own: what the
+   figures mean, said once in words. Read, so in the page's type rather
+   than a caption's grey. */
+.reports-note-text {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #1f2124;
+}
+
+.reports-note-text > :first-child {
+    margin-top: 0;
+}
+
+.reports-note-text > :last-child {
+    margin-bottom: 0;
+}
+
+.reports-note .reports-chart-title {
+    margin-bottom: 6px;
+}
+
+/* ==========================================================================
+   Funnels
+   ========================================================================== */
+
+/* The steps side by side, one above the other on a phone. The bars take
+   --reports-funnel-fill, which a component's `colour` sets. */
+.reports-funnel-steps {
+    display: grid;
+    grid-template-columns: repeat(var(--reports-funnel-columns, 3), minmax(0, 1fr));
+    gap: 12px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.reports-funnel-steps li {
+    min-width: 0;
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px solid #ececef;
+    border-radius: 8px;
+}
+
+.reports-funnel-label {
+    display: block;
+    font-size: 12px;
+    color: #6d7175;
+}
+
+.reports-funnel-steps strong {
+    display: block;
+    margin: 2px 0 8px;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: #1f2124;
+    font-variant-numeric: tabular-nums;
+}
+
+.reports-funnel-track {
+    display: block;
+    height: 6px;
+    border-radius: 999px;
+    background: #f0f0f2;
+    overflow: hidden;
+}
+
+.reports-funnel-fill {
+    display: block;
+    height: 100%;
+    min-width: 2px;
+    border-radius: 999px;
+    background: var(--reports-funnel-fill, var(--wp-admin-theme-color, #3858e9));
+}
+
+.reports-funnel-next {
+    display: block;
+    min-height: 18px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #6d7175;
+}
+
+.reports-funnel-foot {
+    margin: 12px 0 0;
+    font-size: 13px;
+    color: #6d7175;
+}
+
+@media screen and (max-width: 600px) {
+    .reports-funnel-steps {
+        grid-template-columns: 1fr;
+    }
+
+    .reports-funnel-next {
+        min-height: 0;
+    }
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+/* The table itself is styled with the rest of the report, further down:
+   see "Tables, as part of the report". */
+
+/* Table Row Actions */
+.reports-table-actions-col {
+    width: 1%;
+    white-space: nowrap;
+    text-align: right;
+}
+
+.reports-table-actions {
+    white-space: nowrap;
+    text-align: right;
+}
+
+.reports-row-actions-wrap {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.reports-table tbody tr:hover .reports-row-actions-wrap {
+    opacity: 1;
+}
+
+.reports-row-action {
+    color: var(--wp-admin-theme-color, #2271b1);
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.reports-row-action:hover {
+    color: var(--wp-admin-theme-color-darker-10, #135e96);
+}
+
+.reports-row-action.delete,
+.reports-row-action.trash,
+.reports-row-action-delete,
+.reports-row-action-trash {
+    color: #b32d2e;
+}
+
+.reports-row-action.delete:hover,
+.reports-row-action.trash:hover,
+.reports-row-action-delete:hover,
+.reports-row-action-trash:hover {
+    color: #a02424;
+}
+
+.reports-row-actions-wrap .sep {
+    color: #c3c4c7;
+    font-size: 11px;
+}
+
+/* ==========================================================================
+   Exports (EDD-style cards in a row)
+   ========================================================================== */
+
+.reports-exports-section {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 20px;
+
+    /* The gap on .reports-components separates the components from each
+       other, and this is not one of them — it is a sibling rendered before
+       the container. So the export cards sat flush against the top of the
+       first table, one border thick, reading as a single panel with a
+       horizontal rule through it. */
+    margin-bottom: 20px;
+}
+
+.reports-exports-section-title {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.reports-exports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    align-items: start;
+}
+
+/* Support for custom column counts */
+.reports-exports-grid.reports-exports-columns-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.reports-exports-grid.reports-exports-columns-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.reports-exports-grid.reports-exports-columns-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.reports-exports-grid.reports-exports-columns-5 {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.reports-export-card {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+    min-height: 200px;
+}
+
+.reports-export-title {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.reports-export-description {
+    margin: 0 0 16px 0;
+    font-size: 13px;
+    color: #646970;
+    flex: 1;
+}
+
+.reports-export-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.reports-export-filter label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #646970;
+    margin-bottom: 4px;
+}
+
+.reports-export-filter select,
+.reports-export-filter input {
+    width: 100%;
+}
+
+.reports-export-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.reports-export-button .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.reports-export-progress {
+    margin-top: 12px;
+    display: none;
+}
+
+.reports-export-progress-bar {
+    height: 8px;
+    background: #e5e5e5;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.reports-export-progress-fill {
+    height: 100%;
+    background: var(--wp-admin-theme-color, #2271b1);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.reports-export-progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #646970;
+}
+
+.reports-export-progress-label.error {
+    color: #d63638;
+}
+
+/* ==========================================================================
+   Empty State
+   ========================================================================== */
+
+.reports-empty-state {
+    text-align: center;
+    padding: 56px 24px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+}
+
+/* The circle, and the icon centred in it. A Dashicon could be its own
+   circle -- a 26px glyph in a 56px box -- but an SVG is drawn to the size
+   of its box, so the circle is the span around it. */
+.reports-empty-state-icon {
+    width: 56px;
+    height: 56px;
+    color: #5c5f66;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: #f6f6f7;
+}
+
+.reports-empty-state-icon .sugarcommerce-icon {
+    width: 26px;
+    height: 26px;
+    font-size: 26px;
+}
+
+.reports-empty-state h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    color: #1f2124;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.reports-empty-state p {
+    margin: 0 auto;
+    color: #5c5f66;
+    max-width: 46ch;
+    font-size: 13.5px;
+    line-height: 1.55;
+}
+
+/* ==========================================================================
+   Width Classes
+
+   Named for what the renderer emits. These were `.reports-width-*` while
+   get_width_class() has always returned `reports-component--*`, so a
+   component asking for half a row got a class nothing styled and took the
+   whole row like every other one — the option has never done anything.
+
+   The container is a column flex, so a width alone would not put two
+   components side by side either; it wraps now, and a component with no
+   width stated fills the row as before.
+   ========================================================================== */
+
+.reports-component--full,
+.reports-component--auto {
+    width: 100%;
+}
+
+.reports-component--half {
+    width: calc(50% - 10px);
+}
+
+.reports-component--third {
+    width: calc(33.333% - 14px);
+}
+
+.reports-component--two-thirds {
+    width: calc(66.666% - 7px);
+}
+
+.reports-component--quarter {
+    width: calc(25% - 15px);
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media screen and (max-width: 1200px) {
+    .reports-tiles-grid.reports-tiles-columns-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Three or four cards abreast is a wide screen's layout. Below it they
+       go two to a row, and the one that wanted most of a row takes it all. */
+    .reports-component--third,
+    .reports-component--quarter {
+        width: calc(50% - 10px);
+    }
+
+    .reports-component--two-thirds {
+        width: 100%;
+    }
+
+}
+
+@media screen and (max-width: 782px) {
+    .reports-tab {
+        padding: 10px 12px;
+        font-size: 12px;
+    }
+
+    .reports-tiles-grid.reports-tiles-columns-3,
+    .reports-tiles-grid.reports-tiles-columns-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .reports-tile-value {
+        font-size: 22px;
+    }
+
+    /* Whatever number of columns the grid was told to have: each of those
+       rules is the grid's class and a second one, and the bare class here
+       lost to all of them, leaving three cards abreast on a phone and the
+       page scrolling sideways to show the third. */
+    .reports-exports-grid,
+    .reports-exports-grid.reports-exports-columns-2,
+    .reports-exports-grid.reports-exports-columns-3,
+    .reports-exports-grid.reports-exports-columns-4,
+    .reports-exports-grid.reports-exports-columns-5 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* One card to a row. Half a phone is not room for a ranked list: the
+       name, the bar and the figure end up printed on top of each other. */
+    .reports-component--half,
+    .reports-component--third,
+    .reports-component--two-thirds,
+    .reports-component--quarter {
+        width: 100%;
+    }
+
+    #screen-meta,
+    #screen-meta-links {
+        margin-left: -10px;
+    }
+
+    /* Every row that puts things at opposite ends of a line. On a phone
+       there is no line to have two ends of, so they stack and start at the
+       left rather than sitting half off the screen. */
+    .reports-table-header,
+    .reports-table-pagination,
+    .reports-refresh-controls,
+    .reports-filter-fields,
+    .reports-export-progress-info {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .reports-filter-field,
+    .reports-filter-field .field-kit__field,
+    .reports-filter-field .field-kit__combobox,
+    .reports-filter-field select:not(.screen-reader-text),
+    .reports-filter-field input {
+        width: 100%;
+        max-width: none;
+    }
+
+    /* A data table cannot be made narrow enough, so it scrolls inside its own
+       container rather than pushing the page sideways — a horizontally
+       scrolling *page* moves the header and the menu out of reach too. */
+    .reports-table-container,
+    .reports-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .reports-table {
+        min-width: 480px;
+    }
+
+    /* Row actions are a hover affordance, and there is no hover here. */
+    .reports-row-actions-wrap {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    /* The dropdown is positioned against the toggle, which is now the width
+       of the screen; without this it hangs off the right edge. */
+    .reports-date-picker,
+    .wp-core-ui .reports-date-picker-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .reports-date-picker-dropdown {
+        left: 0;
+        right: 0;
+        width: auto;
+        min-width: 0;
+    }
+
+    .reports-date-picker-custom-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    /* Chart padding is most of a phone's width. */
+    .reports-chart-wrapper,
+    .reports-export-card {
+        padding: 12px;
+    }
+
+}
+
+@media screen and (max-width: 480px) {
+    .reports-wrap {
+        margin-right: 10px;
+    }
+
+    .reports-tab .dashicons {
+        display: none;
+    }
+
+}
+
+/* ==========================================================================
+   Progress, Breakdown, Stat List
+
+   The three shapes a chart is the wrong answer to. All markup and CSS: no
+   canvas, no Chart.js, and legible to a screen reader without extra work.
+   ========================================================================== */
+
+.reports-progress-wrapper,
+.reports-breakdown-wrapper,
+.reports-stat-list-wrapper {
+    /* No width here. The component--half / --third classes on the same
+       element set it, and a width declared alongside them wins on source
+       order — which is why every one of these came out full width however
+       it was configured. */
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+}
+
+.reports-progress-title,
+.reports-breakdown-title,
+.reports-stat-list-title {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+/* --- Progress --- */
+
+.reports-progress-track {
+    overflow: hidden;
+    height: 12px;
+    background: #f0f0f1;
+    border-radius: 6px;
+}
+
+.reports-progress-fill {
+    height: 100%;
+
+    /* The admin colour scheme, not a colour of ours. A progress bar that is
+       blue on a site the user set to green is the plugin talking over them. */
+    background: var(--wp-admin-theme-color, #2271b1);
+    border-radius: 6px;
+    transition: width .3s ease-in-out;
+}
+
+.reports-progress-meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 10px 0 0;
+}
+
+.reports-progress-percent {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1d2327;
+    font-variant-numeric: tabular-nums;
+}
+
+.reports-progress-figures,
+.reports-progress-description {
+    margin: 0;
+    color: #646970;
+    font-size: 13px;
+}
+
+.reports-progress-description {
+    margin-top: 8px;
+}
+
+/* --- Breakdown --- */
+
+.reports-breakdown {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.reports-breakdown-row {
+    display: grid;
+
+    /* Label, bar, then the figure with its share in brackets after it:
+       "£593.83 (27.3%)". The share is printed before the value in the
+       markup and placed after it here, close up, so the two read as one
+       figure rather than as two columns of numbers. The label takes what
+       it needs up to about half the row; the bar takes what is left. */
+    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr) auto auto;
+    align-items: center;
+    column-gap: 12px;
+    row-gap: 0;
+    margin: 0;
+    padding: 9px 0;
+}
+
+.reports-breakdown-row + .reports-breakdown-row {
+    border-top: 1px solid #f0f0f1;
+}
+
+.reports-breakdown-label {
+    overflow: hidden;
+    color: #1d2327;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* The picture a breakdown or a stat row can carry before its words: a
+   flag, a brand's mark, a thumbnail. Its size is on the element, so nothing
+   moves when it loads; this only sits it on the line and gives it an edge.
+   Drawn as it is, not cropped: a brand's mark is made for a square and a
+   circle cut the corners off Google Ads and X, while a flag that should be
+   round is round in its own artwork. The edge is a drop shadow, which
+   follows the picture's own outline and takes no room -- there for a
+   picture white at its rim, or Japan's flag on a white card is a red dot. */
+.reports-row-icon {
+    display: inline-block;
+    margin: -2px 6px 0 0;
+    vertical-align: middle;
+    object-fit: contain;
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.2));
+}
+
+/* A named icon rather than a picture: drawn in the text's own colour, with
+   no rim to show it against the card. */
+svg.reports-row-icon {
+    color: #646970;
+    filter: none;
+}
+
+.rtl .reports-row-icon {
+    margin: -2px 0 0 6px;
+}
+
+.reports-breakdown-track {
+    overflow: hidden;
+    height: 6px;
+    background: #f0f0f2;
+    border-radius: 999px;
+}
+
+.reports-breakdown-fill {
+    display: block;
+    height: 100%;
+    --reports-bar: var(--reports-row-color, var(--wp-admin-theme-color, #2271b1));
+    background: linear-gradient(90deg, var(--reports-bar), color-mix(in srgb, var(--reports-bar) 60%, #fff));
+    border-radius: 999px;
+}
+
+.reports-breakdown-share {
+    order: 4;
+    margin-left: -7px;
+    color: #8a8d93;
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+    text-align: left;
+}
+
+.reports-breakdown-share:not(:empty)::before {
+    content: "(";
+}
+
+.reports-breakdown-share:not(:empty)::after {
+    content: ")";
+}
+
+.reports-breakdown-value {
+    order: 3;
+    min-width: 0;
+    color: #1f2124;
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.reports-breakdown-empty {
+    margin: 0;
+    color: #646970;
+    font-size: 13px;
+}
+
+/* --- Stat list --- */
+
+.reports-stat-list {
+    margin: 0;
+}
+
+.reports-stat-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0;
+}
+
+.reports-stat-row + .reports-stat-row {
+    border-top: 1px solid #f0f0f1;
+}
+
+.reports-stat-row dt {
+    flex: none;
+    margin: 0;
+    white-space: nowrap;
+    color: #646970;
+    font-size: 13px;
+}
+
+.reports-stat-row dd {
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+    text-align: right;
+    color: #1d2327;
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+/* --- Sparkline --- */
+
+.reports-tile-sparkline {
+    height: 36px;
+    margin: 10px -4px -4px;
+}
+
+.reports-tile-sparkline canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* ==========================================================================
+   Screen Options
+   ========================================================================== */
+
+.reports-screen-options label {
+    display: inline-block;
+    margin-right: 16px;
+    line-height: 2.2;
+}
+
+/* ==========================================================================
+   Control alignment
+
+   A dashicon is a 20px font glyph on a 20px line: dropped into a button
+   beside 13px text it sets the line box, so the text sits off-centre and the
+   button grows. Every control in this bar carries one, which is why none of
+   them lined up with each other.
+   ========================================================================== */
+
+/* The date picker is the only control in this bar with anything beside its
+   text -- the caret that says it opens a menu -- so it is the only one that
+   has to lay its contents out. The height is core's. Three separate rules
+   used to set it here, at 36px and then at 30px, and core's min-height of
+   40px beat both, so none of them did anything except disagree.
+ *
+ * The .wp-core-ui prefix is what makes this apply at all. Core declares
+ * `.wp-core-ui .button { display: inline-block }` at 0,2,0 and a bare class
+ * here is 0,1,0, so the flex silently lost and the caret fell back onto the
+ * text's baseline -- a 20px glyph in a 20px line box beside 13px text, which
+ * is why it sat low and pushed the button taller.
+ *
+ * Centring it here rather than restyling `.wp-core-ui .button .dashicons`
+ * globally: that rule would reach every core button on the page, including
+ * ones this library did not draw. */
+.wp-core-ui .reports-date-picker-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.wp-core-ui .reports-date-picker-toggle .sugarcommerce-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    line-height: 1;
+    stroke-width: 2;
+}
+
+/* ==========================================================================
+   Filter fields in the controls bar
+
+   One row, not a stack. Each field renders its label above its control,
+   which is right in a form and wrong in a toolbar — it made the bar twice
+   as tall as the controls in it and put a ragged line of labels above a
+   ragged line of selects.
+   ========================================================================== */
+
+.reports-controls-bar .reports-filter-form,
+.reports-controls-bar .reports-filter-fields {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.reports-controls-bar .reports-filter-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+}
+
+/* The same box as the date range and Refresh buttons at the other end of
+   the bar: their height, corner, border and shadow. A row of controls that
+   are nearly but not quite the same size reads as two rows glued together. */
+.reports-controls-bar .reports-filter-field select,
+.reports-controls-bar .reports-filter-field input[type="text"] {
+    height: 36px;
+    min-height: 36px;
+    margin: 0;
+    border: 1px solid #c4c7cc;
+    border-radius: 8px;
+    box-shadow: 0 1px 0 rgba(17, 18, 20, 0.05);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1;
+    color: #1f2124;
+}
+
+.reports-controls-bar .reports-filter-field select:hover,
+.reports-controls-bar .reports-filter-field input[type="text"]:hover {
+    border-color: #a3a7ad;
+}
+
+.reports-controls-bar .reports-filter-field select:focus,
+.reports-controls-bar .reports-filter-field input[type="text"]:focus {
+    border-color: var(--wp-admin-theme-color, #2271b1);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--wp-admin-theme-color, #2271b1) 22%, transparent);
+    outline: 2px solid transparent;
+}
+
+/* A checkbox has no business being 30px tall. */
+.reports-controls-bar .reports-filter-field input[type="checkbox"] {
+    margin: 0;
+}
+
+/* The kit draws each control in a field wrapper meant for a form table. In
+   the bar it is one item in a row, so it carries no width and no margin of
+   its own. */
+.reports-filter-field .field-kit__field {
+    margin: 0;
+}
+
+.reports-filter-field .field-kit__combobox,
+.reports-filter-field .field-kit__select {
+    min-width: 11rem;
+}
+
+/* ==========================================================================
+   The screen, as somewhere to read how the shop is doing
+   ========================================================================== */
+
+/*
+ * Everything above lays the screen out. This is how it looks, in one place,
+ * and it is the same hand as the editing panels: white cards with a soft
+ * edge and a rounder corner, labels written as words rather than shouted in
+ * capitals, buttons that sit quietly beside the thing they change, and --
+ * the part that mattered most -- something to say when there is nothing to
+ * show. A chart of noughts and a line reading "No data available" both look
+ * like a broken screen to somebody who has not made a sale yet.
+ */
+
+.reports-tile,
+.reports-chart-wrapper,
+.reports-breakdown-wrapper,
+.reports-stat-list-wrapper,
+.reports-table-wrapper,
+.reports-progress-wrapper,
+.reports-export-card,
+.reports-empty-state {
+    border: 1px solid #e3e3e6;
+    border-radius: 12px;
+    box-shadow: 0 1px 0 rgba(17, 18, 20, 0.03);
+}
+
+/* Tiles ------------------------------------------------------------------ */
+
+/* The label leads and the icon follows it, small, as a mark beside it. */
+
+/* Titles ----------------------------------------------------------------- */
+
+.reports-chart-title,
+.reports-breakdown-title,
+.reports-stat-list-title,
+.reports-table-title,
+.reports-progress-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2124;
+}
+
+/* Controls --------------------------------------------------------------- */
+
+.reports-controls-bar .button,
+.reports-date-picker-toggle.button {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid #c4c7cc;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 1px 0 rgba(17, 18, 20, 0.05);
+    font-weight: 500;
+    line-height: 34px;
+    color: #1f2124;
+}
+
+.reports-controls-bar .button:hover,
+.reports-date-picker-toggle.button:hover {
+    border-color: #a3a7ad;
+    background: #fafafa;
+    color: #1f2124;
+}
+
+.reports-controls-bar .button:focus,
+.reports-date-picker-toggle.button:focus {
+    border-color: var(--wp-admin-theme-color, #2271b1);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--wp-admin-theme-color, #2271b1) 22%, transparent);
+    outline: 2px solid transparent;
+}
+
+/* Nothing to show -------------------------------------------------------- */
+
+/*
+ * A chart with nothing in it. The canvas keeps its place, so the card does
+ * not jump when the first sale arrives, and the sentence sits where the
+ * line would have been.
+ */
+.reports-chart-container--empty {
+    position: relative;
+    max-height: 220px;
+    border-radius: 8px;
+    background:
+        repeating-linear-gradient(to bottom, transparent 0, transparent 43px, #f1f1f3 43px, #f1f1f3 44px);
+}
+
+.reports-chart-container--empty canvas {
+    visibility: hidden;
+}
+
+.reports-chart-container--empty::after {
+    content: attr(data-empty-text);
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 24px;
+    font-size: 13.5px;
+    color: #5c5f66;
+    text-align: center;
+}
+
+.reports-breakdown-empty,
+.reports-stat-list-wrapper .reports-empty,
+.reports-table-wrapper .reports-table-empty {
+    padding: 22px 16px;
+    border-radius: 8px;
+    background: #f6f6f7;
+    font-size: 13.5px;
+    color: #5c5f66;
+    text-align: center;
+}
+
+/* ==========================================================================
+   Tiles and charts, a second pass
+   ========================================================================== */
+
+/*
+ * A tile is a number somebody came to read, and how it has moved. Everything
+ * else stands back: the label is small and quiet, the icon is gone -- a
+ * glyph in a grey box beside every label was eight decorations saying
+ * nothing -- and the change is a chip, tinted, so up and down are told
+ * apart by more than an arrow.
+ *
+ * Tiles fill their row evenly. Eight of them in a five-column grid left a
+ * second row of three with a hole beside it; sized to fit, the rows are
+ * always full.
+ */
+.reports-tiles-grid,
+.reports-tiles-grid[class*="reports-tiles-columns-"] {
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 14px;
+}
+
+.reports-tile:hover {
+    border-color: #d5d6da;
+    box-shadow: 0 4px 14px rgba(17, 18, 20, 0.06);
+}
+
+/* The shape of the number, under it: a line and nothing else. */
+
+/* Charts ------------------------------------------------------------------ */
+
+/* Lists ------------------------------------------------------------------- */
+
+.reports-breakdown-wrapper {
+    padding: 22px 24px 18px;
+
+    /* Its rows are laid out against this card's width; see "Ranked rows in
+       a narrow card". */
+    container-type: inline-size;
+}
+
+/* ==========================================================================
+   Tables, as part of the report
+
+   A report table is a ranked list with more columns, not a WordPress list
+   screen dropped into a card: no box round it, no stripes, quiet column
+   labels, a hairline between rows, and the first column -- the thing each
+   row is about -- carrying the weight.
+   ========================================================================== */
+
+.reports-table-wrapper {
+    background: #fff;
+    padding: 20px 20px 8px;
+}
+
+.reports-table-header {
+    display: block;
+    margin-bottom: 12px;
+}
+
+.reports-table-description {
+    margin: 4px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #6d7175;
+    max-width: 72ch;
+}
+
+/* The card's padding is the table's margin; rows run edge to edge inside it. */
+.reports-table-container {
+    margin: 0 -20px;
+    overflow-x: auto;
+}
+
+.reports-table,
+.reports-table.widefat {
+    width: 100%;
+    border-collapse: collapse;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+    font-size: 13.5px;
+}
+
+.reports-table th,
+.reports-table thead th {
+    padding: 10px 12px;
+    background: transparent;
+    border-bottom: 1px solid #ebebed;
+    text-align: left;
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: #6d7175;
+}
+
+.reports-table th.sortable {
+    position: relative;
+    padding: 10px 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.reports-table th.sortable:hover {
+    background: transparent;
+    color: #1f2124;
+}
+
+.reports-table th.sorted-asc,
+.reports-table th.sorted-desc {
+    color: #1f2124;
+}
+
+.reports-table th.sortable::after {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.reports-table th.sorted-asc::after {
+    border-left: 3.5px solid transparent;
+    border-right: 3.5px solid transparent;
+    border-bottom: 5px solid currentColor;
+}
+
+.reports-table th.sorted-desc::after {
+    border-left: 3.5px solid transparent;
+    border-right: 3.5px solid transparent;
+    border-top: 5px solid currentColor;
+}
+
+.reports-table td,
+.reports-table tbody td {
+    padding: 13px 12px;
+    border-bottom: 1px solid #f1f1f3;
+    background: transparent;
+    line-height: 1.4;
+    color: #4a4d52;
+    vertical-align: middle;
+    font-variant-numeric: tabular-nums;
+}
+
+.reports-table th:first-child,
+.reports-table td:first-child {
+    padding-left: 20px;
+}
+
+.reports-table th:last-child,
+.reports-table td:last-child {
+    padding-right: 20px;
+}
+
+.reports-table td:first-child {
+    font-weight: 500;
+    color: #1f2124;
+}
+
+/* A link looks like one. In body colour it is a name that happens to be
+   pressable, and nobody presses what does not look as though it can be. */
+.reports-table td a,
+.reports-breakdown-label a {
+    color: var(--wp-admin-theme-color, #2271b1);
+    text-decoration: none;
+}
+
+.reports-table td a:hover,
+.reports-table td a:focus,
+.reports-breakdown-label a:hover,
+.reports-breakdown-label a:focus {
+    text-decoration: underline;
+}
+
+.reports-table tbody tr:nth-child(odd),
+.reports-table.striped > tbody > :nth-child(odd) {
+    background: transparent;
+}
+
+.reports-table tbody tr:hover,
+.reports-table.striped > tbody > tr:hover {
+    background: #fafafb;
+}
+
+.reports-table-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0;
+    padding: 12px 20px;
+    border-top: 1px solid #f1f1f3;
+}
+
+.reports-table-container .reports-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.reports-table-info {
+    font-size: 12.5px;
+    color: #6d7175;
+}
+
+.reports-table-pages {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+}
+
+/* Page numbers are links between pages of one list, not actions: plain
+   until pointed at, and the current one a filled chip. */
+.reports-table-pages .button,
+.reports-table-pages button {
+    min-width: 30px;
+    min-height: 30px;
+    padding: 0 9px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    box-shadow: none;
+    font-size: 12.5px;
+    line-height: 30px;
+    color: #4a4d52;
+}
+
+.reports-table-pages .button:hover:not(:disabled),
+.reports-table-pages .button:focus:not(:disabled) {
+    background: #f1f1f3;
+    color: #1f2124;
+}
+
+.reports-table-pages .button.current,
+.reports-table-pages .button.active,
+.reports-table-pages .button.button-primary {
+    background: #1f2124;
+    color: #fff;
+}
+
+.reports-table-pages .button:disabled,
+.reports-table-pages .button[disabled] {
+    background: transparent !important;
+    border: 0 !important;
+    color: #b5b8bd !important;
+}
+
+.reports-table-pages .button.button-primary:disabled,
+.reports-table-pages .button.button-primary[disabled] {
+    background: #1f2124 !important;
+    color: #fff !important;
+}
+
+.reports-table-pages .ellipsis {
+    padding: 0 6px;
+    color: #6d7175;
+}
+
+/* The period the dated exports cover, once, under all of them. */
+.reports-export-period {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 16px 0 0;
+    font-size: 12.5px;
+    color: #6d7175;
+}
+
+.reports-export-period .sugarcommerce-icon {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+}
+
+/* A card's filters: one to a line, the label above its control and the
+   control the width of the card, the way a form reads. */
+.reports-export-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.reports-export-filters .reports-filter-field {
+    display: block;
+    width: 100%;
+    margin: 0;
+}
+
+.reports-export-filters .reports-filter-field label {
+    display: block;
+    margin: 0 0 5px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #1f2124;
+}
+
+.reports-export-filters .reports-filter-field select,
+.reports-export-filters .reports-filter-field input[type="text"],
+.reports-export-filters .reports-filter-field input[type="date"] {
+    display: block;
+    width: 100%;
+    max-width: none;
+    min-height: 36px;
+    margin: 0;
+}
+
+/* The button is the size of what it says, not a bar across the card. */
+.reports-export-card .reports-export-button {
+    align-self: flex-start;
+    width: auto;
+    margin-top: auto;
+}
+
+/* A table with nothing in it says so in a line, where its first row would
+   be. The container runs edge to edge for the rows' sake, so a tinted,
+   centred panel here became a grey band across the whole card -- a lot of
+   emphasis for "nothing to show". */
+.reports-table-container .reports-table-empty {
+    margin: 0;
+    padding: 2px 20px 14px;
+    border-radius: 0;
+    background: none;
+    font-size: 13px;
+    color: #8a8d93;
+    text-align: left;
+}
+
+.reports-table-container .reports-table-empty p {
+    margin: 0;
+}
+
+/* The select behind a combobox is hidden for screen readers only. The
+   filter bar's rules give every select a minimum width, and a hidden one
+   that is 260px wide is a box off the right of a phone that the whole page
+   then scrolls sideways to reach. */
+.reports-filter-field select.screen-reader-text {
+    left: 0;
+    width: 1px;
+    min-width: 0;
+    max-width: 1px;
+    padding: 0;
+    border: 0;
+}
+
+/* ==========================================================================
+   Ranked rows in a narrow card
+
+   Measured against the card, not the screen: the same card is a third of a
+   wide screen and all of a phone, and it is the card that runs out of room.
+   The bar is the first thing to go -- the figure and its share say what it
+   said -- and the name gets everything the figures leave.
+   ========================================================================== */
+
+@container (max-width: 380px) {
+    .reports-breakdown-row {
+        grid-template-columns: minmax(0, 1fr) auto auto;
+    }
+
+    .reports-breakdown-track {
+        display: none;
+    }
+}
