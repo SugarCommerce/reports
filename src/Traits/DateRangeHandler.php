@@ -231,7 +231,7 @@ trait DateRangeHandler {
                             <?php esc_html_e( 'Start Date', 'sugarcommerce' ); ?>
                             <input type="date"
                                     class="reports-date-start"
-                                    value="<?php echo esc_attr( $current_range['start_local'] ?? '' ); ?>"/>
+                                    value="<?php echo esc_attr( self::picker_day( (string) ( $current_range['start'] ?? '' ) ) ); ?>"/>
                         </label>
                     </div>
                     <div class="reports-date-picker-custom-row">
@@ -239,7 +239,7 @@ trait DateRangeHandler {
                             <?php esc_html_e( 'End Date', 'sugarcommerce' ); ?>
                             <input type="date"
                                     class="reports-date-end"
-                                    value="<?php echo esc_attr( $current_range['end_local'] ?? '' ); ?>"/>
+                                    value="<?php echo esc_attr( self::picker_day( (string) ( $current_range['end'] ?? '' ), true ) ); ?>"/>
                         </label>
                     </div>
                     <div class="reports-date-picker-custom-actions">
@@ -302,6 +302,43 @@ trait DateRangeHandler {
     }
 
     /**
+     * A range's end as the last moment inside it.
+     *
+     * A range's end is the first moment after it: "1 May to 31 May" ends at
+     * midnight on 1 June. Shown to somebody, that is the wrong day -- the
+     * last day they picked is the one before.
+     *
+     * @param string $end UTC end, exclusive.
+     *
+     * @return string UTC, a second earlier; empty for an unreadable end.
+     */
+    protected static function last_moment( string $end ): string {
+        $unix = strtotime( $end . ' UTC' );
+
+        return false === $unix ? '' : gmdate( 'Y-m-d H:i:s', $unix - 1 );
+    }
+
+    /**
+     * A day as a date input holds it: Y-m-d in the site's timezone.
+     *
+     * The input refuses anything else -- a time after the date leaves it
+     * empty -- so the custom range opened blank whatever was showing.
+     *
+     * @param string $value UTC moment.
+     * @param bool   $end   Whether it is a range's (exclusive) end, which
+     *                      shows as the day before.
+     *
+     * @return string
+     */
+    protected static function picker_day( string $value, bool $end = false ): string {
+        if ( '' === $value ) {
+            return '';
+        }
+
+        return Site::format( $end ? self::last_moment( $value ) : $value, 'Y-m-d' );
+    }
+
+    /**
      * "1 – 31 May 2026", or the two dates in full when they straddle a month.
      *
      * @param string $start UTC start.
@@ -311,7 +348,7 @@ trait DateRangeHandler {
      */
     protected static function format_range( string $start, string $end ): string {
         $from = Site::format( $start, 'j M Y' );
-        $to   = Site::format( $end, 'j M Y' );
+        $to   = Site::format( self::last_moment( $end ), 'j M Y' );
 
         if ( '' === $from || '' === $to ) {
             return '';

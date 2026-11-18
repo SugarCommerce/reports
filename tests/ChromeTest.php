@@ -128,6 +128,29 @@ final class ChromeTest extends TestCase {
 	}
 
 	/**
+	 * The custom range opens on the days showing, as a date input reads them.
+	 *
+	 * The inputs were given "2026-05-01 00:00:00", which a date input
+	 * refuses and shows as empty, and the end was the range's exclusive
+	 * end: the day after the last one picked.
+	 */
+	public function test_the_custom_range_opens_on_the_days_showing(): void {
+		$page             = $this->page();
+		$page->date_range = [
+			'preset' => 'custom',
+			'start'  => '2026-05-01 00:00:00',
+			'end'    => '2026-06-01 00:00:00',
+		];
+
+		$html = $page->capture( 'render_date_picker' );
+
+		$this->assertMatchesRegularExpression( '/class="reports-date-start"\s+value="2026-05-01"/', $html );
+		$this->assertMatchesRegularExpression( '/class="reports-date-end"\s+value="2026-05-31"/', $html );
+		$this->assertStringContainsString( '1 May 2026 – 31 May 2026', $html );
+		$this->assertStringNotContainsString( '1 Jun 2026', $html );
+	}
+
+	/**
 	 * It is a core button and says so, rather than restating core's metrics.
 	 */
 	public function test_the_date_picker_is_a_core_button(): void {
