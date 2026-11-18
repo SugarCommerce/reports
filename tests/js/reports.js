@@ -639,9 +639,125 @@ if ( ! ctx.jQuery.calls.length ) {
 	is( reports.rowIcon( { icon: '', icon_html: '' } ), null, 'rowIcon: a row with neither has none' );
 } )();
 
-if ( failures ) {
-	console.error( `\n${ failures } failure(s)` );
-	process.exit( 1 );
+/* -------------------------------------------------------------------------
+ * Requests go through wp.apiFetch.
+ *
+ * The page's nonce runs out after a day, and a report refreshes itself on a
+ * timer: sent with $.ajax and the printed nonce, a screen left open overnight
+ * got a 403 on every refresh. apiFetch fetches a fresh nonce and retries.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * A jQuery whose report wrapper names a report, so a refresh is sent.
+ *
+ * @param {Array} ajax Where $.ajax calls are recorded.
+ * @return {Function} The stub.
+ */
+function reportJQuery( ajax ) {
+	const collection = new Proxy( function () {}, {
+		get( target, name ) {
+			if ( 'length' === name ) {
+				return 0;
+			}
+
+			if ( 'then' === name || Symbol.toPrimitive === name || 'constructor' === name ) {
+				return undefined;
+			}
+
+			if ( 'data' === name ) {
+				return () => 'sales';
+			}
+
+			if ( 'hasClass' === name ) {
+				return () => false;
+			}
+
+			return () => collection;
+		},
+	} );
+
+	const $ = () => collection;
+
+	$.ajax = ( options ) => ajax.push( options );
+	$.each = ( items, each ) => {
+		Object.keys( items || {} ).forEach( ( key ) => each( key, items[ key ] ) );
+	};
+	$.extend = Object.assign;
+	$.param = ( data ) => new URLSearchParams( data ).toString();
+
+	return $;
 }
 
-console.log( '  controller loads, init survives an empty page, URL reading and escaping hold' );
+/**
+ * Run one refresh against an apiFetch that answers as told.
+ *
+ * @param {Function|null} answer Given the request, returns apiFetch's promise; null for a page without apiFetch.
+ * @return {Promise<Object>} What was sent and what came of it.
+ */
+function refreshWith( answer ) {
+	const seen = { apiFetch: [], ajax: [], updated: null, logged: null, completed: false };
+	const context = load( {
+		jQuery: reportJQuery( seen.ajax ),
+		console: Object.assign( Object.create( console ), { log() {}, warn() {}, error: ( ...args ) => {
+			seen.logged = args;
+		} } ),
+		window: {
+			location: { href: 'https://example.test/wp-admin/admin.php?page=reports&tab=overview' },
+			SugarCommerceReports: { 'sugarcommerce-reports': { restUrl: 'https://example.test/wp-json/reports/v1/', restNonce: 'stale' } },
+			wp: answer ? {
+				apiFetch: ( options ) => {
+					seen.apiFetch.push( options );
+
+					return answer( options );
+				},
+			} : {},
+		},
+	} );
+	const reports = context.window.ReportsController;
+
+	reports.updateComponents = ( components ) => {
+		seen.updated = components;
+	};
+	reports.updateLastUpdatedText = () => {
+		seen.completed = true;
+	};
+
+	reports.refreshAllComponents();
+
+	return new Promise( ( resolve ) => setImmediate( () => setImmediate( () => resolve( seen ) ) ) );
+}
+
+const requestChecks = ( async function () {
+	const ok = await refreshWith( () => Promise.resolve( { success: true, components: { total: 1 } } ) );
+
+	is( ok.ajax.length, 0, 'refresh: $.ajax is not used when apiFetch is there' );
+	is( ok.apiFetch.length, 1, 'refresh: sent through apiFetch' );
+
+	if ( ok.apiFetch[ 0 ] ) {
+		is( ok.apiFetch[ 0 ].method, 'GET', 'refresh: a GET' );
+		is( /\/components\?report_id=sales&tab=overview/.test( ok.apiFetch[ 0 ].url ), true, 'refresh: the query is on the URL' );
+		is( ok.apiFetch[ 0 ].parse, true, 'refresh: apiFetch parses, so it can see a stale nonce' );
+	}
+
+	is( ok.updated && ok.updated.total, 1, 'refresh: the components are updated from the answer' );
+	is( ok.completed, true, 'refresh: complete runs after success' );
+
+	const refused = await refreshWith( () => Promise.reject( { code: 'rest_forbidden', message: 'No.', data: { status: 403 } } ) );
+
+	is( refused.updated, null, 'refresh: a refusal updates nothing' );
+	is( refused.logged && refused.logged[ 1 ] && refused.logged[ 1 ].message, 'No.', 'refresh: a refusal reaches error() as responseJSON' );
+	is( refused.completed, true, 'refresh: complete runs after an error' );
+
+	const bare = await refreshWith( null );
+
+	is( bare.ajax.length, 1, 'refresh: without apiFetch it falls back to $.ajax' );
+} )();
+
+requestChecks.then( () => {
+	if ( failures ) {
+		console.error( `\n${ failures } failure(s)` );
+		process.exit( 1 );
+	}
+
+	console.log( '  controller loads, init survives an empty page, URL reading and escaping hold, requests go through apiFetch' );
+} );

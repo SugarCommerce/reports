@@ -394,6 +394,10 @@ components under the old key, needs the new one.
 * PHP 8.3 or later
 * WordPress 7.1 or later
 
+The script's refreshes, exports and screen options go through `wp.apiFetch`
+(a dependency of the script), so a report left open past its nonce's life,
+refreshing itself, renews the nonce and tries again instead of answering 403.
+
 ## License
 
 GPL-2.0-or-later

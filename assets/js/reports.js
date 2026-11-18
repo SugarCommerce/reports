@@ -27,6 +27,73 @@
     })();
 
     /**
+     * A REST request, given as $.ajax would take it.
+     *
+     * Through wp.apiFetch when the page has it, because the nonce printed
+     * with the page runs out after a day: a report left open (and refreshing
+     * itself) overnight then got a 403 on every refresh, export and screen
+     * option. apiFetch notices the stale nonce, asks for a fresh one and
+     * sends the request again. The callbacks are $.ajax's -- `success` gets
+     * the decoded body, `error` something with the `responseJSON` and
+     * `status` an xhr would have, `complete` runs after either -- so the
+     * callers read the answer the same either way.
+     *
+     * @param {Object} options url, method, data, contentType, success, error, complete.
+     * @returns {void}
+     */
+    function rest(options) {
+        const api = window.wp && window.wp.apiFetch;
+        const method = options.method || 'GET';
+
+        if (typeof api !== 'function') {
+            $.ajax($.extend({}, options, {
+                beforeSend: (xhr) => {
+                    xhr.setRequestHeader('X-WP-Nonce', cfg.restNonce);
+                }
+            }));
+
+            return;
+        }
+
+        const request = {
+            url: options.url,
+            method: method,
+            headers: { 'X-WP-Nonce': cfg.restNonce },
+            parse: true
+        };
+
+        if (method === 'GET') {
+            const query = options.data ? $.param(options.data) : '';
+
+            if (query) {
+                request.url += (request.url.indexOf('?') === -1 ? '?' : '&') + query;
+            }
+        } else if (options.data !== undefined) {
+            request.body = options.data;
+
+            if (options.contentType) {
+                request.headers['Content-Type'] = options.contentType;
+            }
+        }
+
+        api(request).then((response) => {
+            if (options.success) {
+                options.success(response);
+            }
+        }, (error) => {
+            const body = error && typeof error === 'object' && ['invalid_json', 'fetch_error', 'offline_error'].indexOf(error.code) === -1 && error.name !== 'AbortError' ? error : undefined;
+
+            if (options.error) {
+                options.error({ responseJSON: body, status: (body && body.data && body.data.status) || 0 });
+            }
+        }).finally(() => {
+            if (options.complete) {
+                options.complete();
+            }
+        });
+    }
+
+    /**
      * Main Reports Controller
      *
      * @namespace ReportsController
@@ -240,12 +307,9 @@
                 $component.toggle($box.prop('checked'));
             }
 
-            $.ajax({
+            rest({
                 url: cfg.restUrl + 'screen-options',
                 method: 'POST',
-                beforeSend: (xhr) => {
-                    xhr.setRequestHeader('X-WP-Nonce', cfg.restNonce);
-                },
                 contentType: 'application/json',
                 data: JSON.stringify({
                     report_id: $panel.data('report'),
@@ -454,13 +518,10 @@
                 ...filters
             };
 
-            $.ajax({
+            rest({
                 url: cfg.restUrl + 'components',
                 method: 'GET',
                 data: requestData,
-                beforeSend: (xhr) => {
-                    xhr.setRequestHeader('X-WP-Nonce', cfg.restNonce);
-                },
                 success: (response) => {
                     if (response.success && response.components) {
                         this.updateComponents(response.components);
@@ -1758,12 +1819,9 @@
                 date_end: this.getCurrentDateEnd()
             };
 
-            $.ajax({
+            rest({
                 url: cfg.restUrl + 'export/start',
                 method: 'POST',
-                beforeSend: (xhr) => {
-                    xhr.setRequestHeader('X-WP-Nonce', cfg.restNonce);
-                },
                 contentType: 'application/json',
                 data: JSON.stringify(requestData),
                 success: (response) => {
@@ -1803,12 +1861,9 @@
             const $progressLabel = $card.find('.reports-export-progress-label');
             const $progressPercent = $card.find('.reports-export-progress-percent');
 
-            $.ajax({
+            rest({
                 url: cfg.restUrl + 'export/batch',
                 method: 'POST',
-                beforeSend: (xhr) => {
-                    xhr.setRequestHeader('X-WP-Nonce', cfg.restNonce);
-                },
                 contentType: 'application/json',
                 data: JSON.stringify({
                     export_token: exportToken,

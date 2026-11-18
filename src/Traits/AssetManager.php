@@ -79,7 +79,9 @@ trait AssetManager {
 			Runtime::handle(),
 			__FILE__,
 			'js/reports.js',
-			[ 'jquery', Runtime::handle( 'chartjs' ) ]
+			// wp-api-fetch carries the REST requests, so a nonce that ran
+			// out while the report was open is renewed, not answered 403.
+			[ 'jquery', 'wp-api-fetch', Runtime::handle( 'chartjs' ) ]
 		);
 	}
 
