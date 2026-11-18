@@ -235,8 +235,11 @@ trait ChartRenderer {
         $shown  = $component['show_legend'] ?? 'auto';
 
         // Two series need telling apart, and one does not: its name is the
-        // chart's title.
-        $legend['display'] = 'auto' === $shown ? count( $datasets ) > 1 : (bool) $shown;
+        // chart's title. A pie or a doughnut is the exception -- its legend
+        // names the slices, not the series, and without it nobody can tell
+        // which colour is which.
+        $sliced            = in_array( $chart_type, [ 'pie', 'doughnut' ], true );
+        $legend['display'] = 'auto' === $shown ? ( $sliced || count( $datasets ) > 1 ) : (bool) $shown;
 
         $options = [
 			'responsive'          => true,

@@ -97,8 +97,8 @@ use SugarCommerce\Reports\Datasets;
 ```
 
 Two lines over each other each fade from their own colour. The legend is
-drawn for two series and not for one (`show_legend`: `auto`, `true` or
-`false`).
+drawn for two series and not for one, and always for a pie or a doughnut,
+whose legend names the slices (`show_legend`: `auto`, `true` or `false`).
 
 * `value_format` is `currency` (with `currency`, formatted by the browser,
   which knows a yen has no pence) or `integer`; anything else is a plain

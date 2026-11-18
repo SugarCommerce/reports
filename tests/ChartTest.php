@@ -208,6 +208,27 @@ final class ChartTest extends TestCase {
 	}
 
 	/**
+	 * A pie's legend names its slices, so one dataset still has one. It
+	 * had none: every pie on a report was colours nobody could name.
+	 */
+	public function test_a_pie_or_doughnut_names_its_slices(): void {
+		$slices = [
+			'labels'   => [ 'Complete', 'Failed' ],
+			'datasets' => [
+				[
+					'label' => 'Orders',
+					'data'  => [ 8, 2 ],
+				],
+			],
+		];
+
+		$this->assertTrue( $this->config( [ 'chart_type' => 'pie' ], $slices )['options']['plugins']['legend']['display'] );
+		$this->assertTrue( $this->config( [ 'chart_type' => 'doughnut' ], $slices )['options']['plugins']['legend']['display'] );
+		$this->assertFalse( $this->config( [ 'chart_type' => 'pie', 'show_legend' => false ], $slices )['options']['plugins']['legend']['display'] );
+		$this->assertFalse( $this->config( [ 'chart_type' => 'bar' ], $slices )['options']['plugins']['legend']['display'] );
+	}
+
+	/**
 	 * The first dataset's own type decides the chart, which is how bars are
 	 * drawn when the period turned out short.
 	 */
