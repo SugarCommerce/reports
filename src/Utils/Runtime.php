@@ -12,6 +12,8 @@ declare( strict_types=1 );
 
 namespace SugarCommerce\Reports\Utils;
 
+use SugarCommerce\Plugin\Build;
+
 /**
  * Class Runtime
  *
@@ -85,32 +87,18 @@ final class Runtime {
 	 * version rather than the code. It is also a construct that has no place
 	 * in a file that ships inside somebody's plugin.
 	 *
+	 * The rule is {@see Build::name()}, shared by every package that names
+	 * its build: a plugin's own "…\Lib" namespace is named for every
+	 * segment before "Lib", so two plugins of one vendor never share names.
+	 *
 	 * @param string $under The namespace this class is compiled under, prefixed or not.
 	 *
 	 * @return string
 	 */
 	public static function prefix_for( string $under ): string {
-		$under = explode( '\\', trim( $under, '\\' ) );
+		$build = Build::name( $under, self::OWN_SEGMENTS );
 
-		// What Strauss put in front of this package's own namespace. A plugin
-		// of the SugarCommerce family prefixes with a namespace that starts
-		// "SugarCommerce\" too — "SugarCommerce\Playground\Vendor\" — so the
-		// first segment alone cannot tell a prefixed build from an unprefixed
-		// one: it named both "sugarcommerce-reports", and that plugin's
-		// routes, handles and transients were every unprefixed copy's.
-		$segments = array_slice( $under, 0, -self::OWN_SEGMENTS );
-
-		if ( [] === $segments || '' === $segments[0] ) {
-			return self::LIBRARY;
-		}
-
-		// Only the first segment, as it always was, where that is enough:
-		// "SugarCart\Vendor" is "sugarcart". A family plugin's prefix needs
-		// all of its segments to be told apart from the library and from its
-		// siblings.
-		$name = 'SugarCommerce' === $segments[0] ? implode( '-', $segments ) : $segments[0];
-
-		return self::slug( $name ) . '-' . self::LIBRARY;
+		return '' === $build ? self::LIBRARY : $build . '-' . self::LIBRARY;
 	}
 
 	/**
@@ -172,21 +160,5 @@ final class Runtime {
 	 */
 	public static function hook( string $suffix ): string {
 		return self::key() . '_' . $suffix;
-	}
-
-	/**
-	 * Reduce a namespace segment to a lowercase slug.
-	 *
-	 * `sanitize_title()` is not used here: this runs from `__NAMESPACE__` at
-	 * class-load time, which can precede WordPress being fully loaded.
-	 *
-	 * @param string $value Value to slug.
-	 *
-	 * @return string
-	 */
-	private static function slug( string $value ): string {
-		$value = preg_replace( '/[^A-Za-z0-9]+/', '-', $value ) ?? '';
-
-		return strtolower( trim( $value, '-' ) );
 	}
 }
