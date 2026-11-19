@@ -348,6 +348,11 @@ trait ProgressRenderer {
 			<dl class="reports-stat-list">
 				<?php $this->render_stat_rows( $rows, $component ); ?>
 			</dl>
+
+			<?php // A title over nothing is an empty card: said, as a breakdown says it. ?>
+			<p class="reports-empty"<?php echo [] === $rows && [] === (array) ( $component['rows'] ?? [] ) ? '' : ' hidden'; ?>>
+				<?php echo esc_html( (string) ( $component['empty_message'] ?? __( 'No data available', 'sugarcommerce' ) ) ); ?>
+			</p>
 		</div>
 		<?php
 	}

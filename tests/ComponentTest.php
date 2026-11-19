@@ -195,6 +195,36 @@ final class ComponentTest extends TestCase {
 	}
 
 	/**
+	 * A stat list with nothing to list says so, as a breakdown does, rather
+	 * than being a title over an empty card; one with rows hides the line,
+	 * which the script shows again if a refresh empties it.
+	 */
+	public function test_an_empty_stat_list_says_so(): void {
+		$empty = $this->renderer()->draw(
+			'glance',
+			[
+				'type'          => 'stat_list',
+				'title'         => 'At a glance',
+				'empty_message' => 'No orders in this period.',
+				'data_callback' => fn() => [ 'rows' => [] ],
+			]
+		);
+
+		$this->assertMatchesRegularExpression( '#<p class="reports-empty">\s*No orders in this period\.\s*</p>#', $empty );
+
+		$full = $this->renderer()->draw(
+			'glance',
+			[
+				'type'          => 'stat_list',
+				'data_callback' => fn() => [ 'rows' => [ [ 'label' => 'Best day', 'value' => 'Monday', 'format' => 'text' ] ] ],
+			]
+		);
+
+		$this->assertStringContainsString( '<p class="reports-empty" hidden>', $full );
+		$this->assertStringContainsString( 'No data available', $full );
+	}
+
+	/**
 	 * A tile shows its title and its value.
 	 */
 	public function test_a_tile_shows_its_title_and_value(): void {

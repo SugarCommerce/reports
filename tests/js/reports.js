@@ -637,6 +637,24 @@ if ( ! ctx.jQuery.calls.length ) {
 	is( built[ 0 ], '<img>', 'rowIcon: a URL is still a picture' );
 
 	is( reports.rowIcon( { icon: '', icon_html: '' } ), null, 'rowIcon: a row with neither has none' );
+
+	{
+		const seen = {};
+		const $list = {
+			find: ( selector ) => ( {
+				empty() {
+					return this;
+				},
+				prop( name, value ) {
+					seen[ selector + ' ' + name ] = value;
+					return this;
+				},
+			} ),
+		};
+
+		reports.updateStatList( $list, { rows: [] } );
+		is( seen[ '.reports-empty hidden' ], false, 'updateStatList: a list a refresh emptied says so' );
+	}
 } )();
 
 /* -------------------------------------------------------------------------

@@ -642,6 +642,7 @@
             const rows = Array.isArray(data.rows) ? data.rows : [];
 
             $list.empty();
+            $component.find('.reports-empty').prop('hidden', rows.length > 0);
 
             rows.forEach((row) => {
                 $list.append(

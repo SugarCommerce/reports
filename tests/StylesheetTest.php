@@ -212,6 +212,33 @@ final class StylesheetTest extends TestCase {
 	}
 
 	/**
+	 * An export card is as tall as what is in it, or as its neighbours.
+	 *
+	 * A fixed minimum height, with the button pushed to the bottom, left a
+	 * card with no description or filters a blank band above its button.
+	 */
+	public function test_an_export_card_has_no_fixed_height(): void {
+		preg_match( '/\.reports-export-card\s*\{([^}]*)\}/', $this->css(), $card );
+		preg_match( '/\.reports-exports-grid\s*\{([^}]*)\}/', $this->css(), $grid );
+
+		$this->assertStringNotContainsString( 'min-height', $card[1] );
+		$this->assertStringContainsString( 'align-items: stretch', $grid[1] );
+	}
+
+	/**
+	 * In the phone's row of pills a group's heading is a rule, not a word
+	 * among the pills, and stays the list's name for a screen reader.
+	 */
+	public function test_a_group_heading_is_a_rule_in_the_row_of_pills(): void {
+		preg_match( '/@media screen and \(max-width: 782px\) \{\s*\.reports-shell.*?\n\}/s', $this->css(), $narrow );
+
+		$this->assertNotEmpty( $narrow, 'The narrow sidebar block is missing.' );
+		$this->assertMatchesRegularExpression( '/\.reports-sidebar-heading \{[^}]*clip-path: inset\(50%\)/', $narrow[0] );
+		$this->assertMatchesRegularExpression( '/\.reports-sidebar-group \{\s*position: relative;/', $narrow[0], 'The hidden heading is placed inside the scrolling row, not past the screen.' );
+		$this->assertMatchesRegularExpression( '/\.reports-sidebar-group \+ \.reports-sidebar-group::before \{[^}]*width: 1px/', $narrow[0] );
+	}
+
+	/**
 	 * The library styles for WordPress's own breakpoint.
 	 *
 	 * 782px is where core stacks the form table and grows every control to a

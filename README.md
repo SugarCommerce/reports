@@ -21,6 +21,7 @@ the callbacks that fetch the numbers.
 * Show a funnel: steps side by side, with how many carried on from each
 * Put a sentence across a tab that takes no room when it has nothing to say
 * Add a data table, sortable and paged, beside them
+* Say so in a line when a breakdown or stat list has nothing in it (`empty_message`, default "No data available"), never a title over an empty card
 * Group everything into tabs, each with its own filters
 * Refresh in place when the range or a filter changes, without a page load
 * Offer a CSV export of what is on screen, batched so it does not time out
@@ -239,7 +240,8 @@ Reports::register( 'my-analytics', [
   between any two.
 * `group` is a heading in the sidebar. Tabs without one are listed first,
   then each group under its heading. The tab bar has no headings and ignores
-  it.
+  it, and in the sidebar's row of links on a phone a group is set off by a
+  thin rule (the heading stays its name for a screen reader).
 * `icon` is drawn in the sidebar and not on a tab, as in WordPress itself.
   Either form in [Icons](#icons): `heroicons-outline:chart-bar` or
   `dashicons-bank`.

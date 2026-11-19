@@ -518,8 +518,9 @@
 
 /* On a narrow screen a column of links beside the report leaves the report
    half a phone. The same links become one row above it that scrolls
-   sideways, each a pill, with the same shadowed edges the tab bar has. The
-   headings stay, in line, as the break between one group and the next. */
+   sideways, each a pill, with the same shadowed edges the tab bar has. A
+   group's heading is a thin rule between one group and the next: printed
+   in line it read as one more pill, a grey word in capitals among them. */
 @media screen and (max-width: 782px) {
     .reports-shell {
         display: block;
@@ -561,11 +562,32 @@
         gap: 6px;
     }
 
+    /* Still the list's name for a screen reader (aria-labelledby). Placed
+       in its group, which is inside the scrolling row: placed by anything
+       outside it, the last group's heading stood past the edge of the
+       screen and the page scrolled sideways to reach it. */
+    .reports-sidebar-group {
+        position: relative;
+    }
+
     .reports-sidebar-heading {
-        flex: 0 0 auto;
+        position: absolute;
+        width: 1px;
+        height: 1px;
         margin: 0;
-        padding: 0 2px 0 8px;
+        padding: 0;
+        overflow: hidden;
+        clip-path: inset(50%);
         white-space: nowrap;
+    }
+
+    .reports-sidebar-group + .reports-sidebar-group::before {
+        content: "";
+        flex: none;
+        width: 1px;
+        height: 20px;
+        margin: 0 4px;
+        background: #dcdcde;
     }
 
     /* 36px tall: a thing to press with a thumb, in a row short enough to
@@ -1099,7 +1121,12 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 16px;
-    align-items: start;
+
+    /* Cards side by side are as tall as the tallest, so their buttons
+       line up along the bottom; a card on its own is as tall as what is
+       in it. A fixed minimum height did the first and left a card with
+       no description or filters a blank band above its button. */
+    align-items: stretch;
 }
 
 /* Support for custom column counts */
@@ -1126,8 +1153,6 @@
     padding: 16px;
     display: flex;
     flex-direction: column;
-    align-self: start;
-    min-height: 200px;
 }
 
 .reports-export-title {
