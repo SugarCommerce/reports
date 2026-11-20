@@ -508,4 +508,51 @@ if ( ! function_exists( 'wp_add_inline_script' ) ) {
 	}
 }
 
+/*
+ * What SugarCommerce\Plugin\Assets reaches for to find the built script and
+ * its manifest: the content folder holds the package, as on a site.
+ */
+if ( ! defined( 'WP_CONTENT_DIR' ) ) {
+	define( 'WP_CONTENT_DIR', dirname( __DIR__, 3 ) );
+}
+
+if ( ! function_exists( 'wp_normalize_path' ) ) {
+	/**
+	 * A path with forward slashes.
+	 *
+	 * @param string $path A path.
+	 *
+	 * @return string
+	 */
+	function wp_normalize_path( string $path ): string {
+		return str_replace( '\\', '/', $path );
+	}
+}
+
+if ( ! function_exists( 'content_url' ) ) {
+	/**
+	 * The content folder's URL.
+	 *
+	 * @param string $path A path under it.
+	 *
+	 * @return string
+	 */
+	function content_url( string $path = '' ): string {
+		return 'https://example.test/wp-content/' . ltrim( $path, '/' );
+	}
+}
+
+if ( ! function_exists( 'site_url' ) ) {
+	/**
+	 * The site's URL.
+	 *
+	 * @param string $path A path under it.
+	 *
+	 * @return string
+	 */
+	function site_url( string $path = '' ): string {
+		return 'https://example.test/' . ltrim( $path, '/' );
+	}
+}
+
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';

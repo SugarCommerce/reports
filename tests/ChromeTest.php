@@ -262,10 +262,10 @@ final class ChromeTest extends TestCase {
 	 * The busy state is core's, so it spins and respects reduced motion.
 	 */
 	public function test_refreshing_uses_cores_updating_message(): void {
-		$js = (string) file_get_contents( dirname( __DIR__ ) . '/assets/js/reports.js' );
+		$js = (string) file_get_contents( dirname( __DIR__ ) . '/src/js/reports/refresh.js' );
 
-		$this->assertStringContainsString( "addClass('refreshing updating-message')", $js );
-		$this->assertStringContainsString( "removeClass('refreshing updating-message')", $js );
+		$this->assertStringContainsString( "classList.add( 'refreshing', 'updating-message' )", $js );
+		$this->assertStringContainsString( "classList.remove( 'refreshing', 'updating-message' )", $js );
 
 		// And the local imitation of it is gone.
 		$css = (string) file_get_contents( dirname( __DIR__ ) . '/assets/css/reports.css' );

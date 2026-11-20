@@ -21,8 +21,8 @@ use SugarCommerce\Reports\Utils\Runtime;
 /**
  * Trait AssetManager
  *
- * Enqueues the report's stylesheet, Chart.js and its script, from wherever
- * the package was installed.
+ * Enqueues the report's stylesheet and its script, from wherever the package
+ * was installed.
  */
 trait AssetManager {
 
@@ -68,21 +68,11 @@ trait AssetManager {
 			'css/reports.css'
 		);
 
-		Assets::enqueue_script(
-			Runtime::handle( 'chartjs' ),
-			__FILE__,
-			'js/chart.js',
-			[]
-		);
-
-		Assets::enqueue_script(
-			Runtime::handle(),
-			__FILE__,
-			'js/reports.js',
-			// wp-api-fetch carries the REST requests, so a nonce that ran
-			// out while the report was open is renewed, not answered 403.
-			[ 'jquery', 'wp-api-fetch', Runtime::handle( 'chartjs' ) ]
-		);
+		// Built from src/js into assets/build, with Chart.js bundled in. It
+		// imports wp-api-fetch, which carries the REST requests, so a nonce
+		// that ran out while the report was open is renewed, not answered
+		// 403; the build's manifest names it.
+		Assets::enqueue_built_script( Runtime::handle(), __FILE__, 'reports' );
 	}
 
 	/**

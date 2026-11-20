@@ -35,14 +35,15 @@ final class StylesheetTest extends TestCase {
 	 * @return string
 	 */
 	private function rendered(): string {
-		$rendered = (string) file_get_contents( dirname( __DIR__ ) . '/assets/js/reports.js' );
+		$rendered = '';
 
 		$files = new \RecursiveIteratorIterator(
 			new \RecursiveDirectoryIterator( dirname( __DIR__ ) . '/src' )
 		);
 
+		// The PHP and the script's sources, src/js, alike.
 		foreach ( $files as $file ) {
-			if ( $file->isFile() && 'php' === $file->getExtension() ) {
+			if ( $file->isFile() && in_array( $file->getExtension(), [ 'php', 'js' ], true ) ) {
 				$rendered .= (string) file_get_contents( $file->getPathname() );
 			}
 		}

@@ -360,6 +360,72 @@ A component of a type the library does not have is drawn by a filter,
 `sugarcommerce_reports_render_component` (prefixed the same way): return true from it once
 you have printed the component.
 
+## The scripts
+
+Plain JavaScript in ES modules (`src/js`), each with one job, built by
+`@wordpress/scripts` into `assets/build` -- one file, `reports.js`, with a
+`reports.asset.php` naming the WordPress scripts it imports (`wp-api-fetch`,
+`wp-dom-ready`) and a version that changes with its contents.
+`Traits\AssetManager` loads it on the report's own screen with
+`SugarCommerce\Plugin\Assets::enqueue_built_script()`, under the copy's
+handle (`Runtime::handle()`), in the footer. No jQuery.
+
+Chart.js 4.6.1 (MIT, <https://www.chartjs.org>, with its `@kurkle/color`,
+also MIT) is bundled into that file from the `chart.js` package, every chart
+type, scale and plugin registered (`chart.js/auto`) as the vendored copy it
+replaces had them. It is no longer a script of its own, so there is no
+`…-chartjs` handle and no `window.Chart`.
+
+| Module | Its job |
+|---|---|
+| `reports.js` | The entry: reads the settings, starts the report once the page is ready |
+| `reports/init` | Puts it together, in the order the page always did it |
+| `reports/page` | Stray notices gathered under the header; the current section scrolled into view in a row that scrolls |
+| `reports/date-picker` | The presets, the custom range, closing on a click elsewhere |
+| `reports/filters` | Filter forms with nothing to type into submit on a choice (`reports-filter-form--auto`) |
+| `reports/location` | The tab, period and `filter_*` arguments read from the address, and a new period written into it |
+| `reports/refresh` | Refresh, the report's own interval (paused while the page is out of view), "Updated 2m ago" |
+| `reports/components` | Tiles, progress bars, breakdowns and stat lists drawn again from a refresh |
+| `reports/charts/charts`, `charts/style` | Charts drawn from `data-chart-config` and again from a refresh; sparklines; the report's look for a dataset that says nothing |
+| `reports/tables/rows`, `tables/paging`, `tables/sort` | A table's rows drawn again, its pages and buttons, sorting by a heading |
+| `reports/exports` | A CSV export started, written batch by batch, downloaded |
+| `reports/screen-options` | A component hidden the moment its box is unticked, the choice saved |
+| `lib/config` | The one reader of what PHP printed |
+| `lib/rest` | Every request, through `@wordpress/api-fetch` |
+| `lib/query`, `lib/merge`, `lib/data`, `lib/dom` | What jQuery did and the page relies on: `$.param()`'s query string, `$.extend( true )`'s merge of a chart's own options, `.data()`'s reading of `data-*` attributes, `show()`/`hide()`/`toggle()` -- each checked against jQuery 3.7 in the tests |
+| `lib/text` | The words PHP handed over, with their `%1$d` and `%s` filled in |
+
+What other code may rely on is unchanged:
+
+* the handle, `Runtime::handle()`, and its settings published both ways they
+  were: `window.SugarCommerceReports[ handle ]`, which the script finds from
+  the id WordPress stamps on its tag, and the localized
+  `Runtime::js_object( 'Admin' )` (`SugarcommerceReportsAdmin` unprefixed);
+* every request: the refresh's GET to `components` with `report_id`, `tab`,
+  `date_preset`, `date_start`, `date_end` and the `filter_*` arguments
+  (a multiselect as repeated `filter_x[]`), the JSON posted to
+  `screen-options`, `export/start` and `export/batch`, each with
+  `X-WP-Nonce`;
+* every class and data attribute the PHP draws or the stylesheet styles,
+  and the ones the script adds (`refreshing updating-message`,
+  `reports-component-refreshing`, `reports-chart-container--empty` with
+  `data-empty-text`, `sorted-asc`/`sorted-desc`, `reports-filter-form--busy`).
+
+`window.ReportsController`, which the old script set and nothing read, is
+gone; so is its fallback to `$.ajax` on a page without `wp.apiFetch`, which
+the build now brings.
+
+```bash
+npm ci
+npm run build      # assets/build, committed
+npm run start      # rebuild on change
+npm run test:js    # Vitest, in jsdom (composer test:js runs it too)
+npm run lint:js
+```
+
+The build's files are what ship, with the sources beside them. CI builds
+again and fails when the result differs from what was committed.
+
 ## Moving from arraypress/wp-*
 
 From `arraypress/wp-register-reports` (`ArrayPress\RegisterReports`). Every
@@ -377,7 +443,7 @@ keeps its name; what a screen shows is the same. It now builds on
 | filter `reports_register` (`{prefix}_reports_register`) | `sugarcommerce_reports_register` (`Runtime::hook( 'register' )`) |
 | filter `reports_render_component` | `sugarcommerce_reports_render_component` (`Runtime::hook( 'render_component' )`) |
 | REST namespace `reports/v1` (`{prefix}-reports/v1`) | `sugarcommerce-reports/v1` (`Runtime::rest_namespace()`) |
-| script and style handles `reports`, `reports-chartjs` | `sugarcommerce-reports`, `sugarcommerce-reports-chartjs` (`Runtime::handle()`) |
+| script and style handles `reports`, `reports-chartjs` | `sugarcommerce-reports` (`Runtime::handle()`); Chart.js is bundled into the script, with no handle of its own |
 | `window.ArrayPressReports[handle]`, `window.ReportsAdmin` | `window.SugarCommerceReports[handle]`, `window.SugarcommerceReportsAdmin` |
 | transients `reports_export_*`, uploads folder `reports_exports` | `sugarcommerce_reports_export_*`, `sugarcommerce_reports_exports` (`Runtime::key()`) |
 | user meta for hidden components, `reports_hidden_components_{id}` | `sugarcommerce_reports_hidden_components_{id}` (`Runtime::key()`) |
@@ -401,7 +467,7 @@ components under the old key, needs the new one.
 * WordPress 7.1 or later
 
 The script's refreshes, exports and screen options go through `wp.apiFetch`
-(a dependency of the script), so a report left open past its nonce's life,
+(which the build imports), so a report left open past its nonce's life,
 refreshing itself, renews the nonce and tries again instead of answering 403.
 
 ## License

@@ -1,0 +1,28 @@
+{
+  "name": "@sugarcommerce/reports",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The reports screen's script -- the date range, refreshing in place, charts drawn with Chart.js, table paging and sorting, CSV exports -- built to assets/build with @wordpress/scripts.",
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "build": "wp-scripts build reports=./src/js/reports.js --output-path=assets/build",
+    "start": "wp-scripts start reports=./src/js/reports.js --output-path=assets/build",
+    "test:js": "wp-scripts test-unit-js",
+    "lint:js": "wp-scripts lint-js src/js tests/js",
+    "format:js": "wp-scripts format src/js tests/js"
+  },
+  "devDependencies": {
+    "@wordpress/api-fetch": "^8.1.0",
+    "@wordpress/dom-ready": "^5.1.0",
+    "@wordpress/scripts": "~37.1.0",
+    "chart.js": "~4.6.1",
+    "globals": "^16.5.0",
+    "jquery": "~3.7.1",
+    "jsdom": "~30.1.3",
+    "vite": "~8.1.7",
+    "vitest": "~5.1.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
