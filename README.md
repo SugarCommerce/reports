@@ -191,6 +191,36 @@ range and the component -- or whatever its `render_callback` prints.
 script fills in later. A component with `ajax_refresh` false is left out of
 the in-place refresh.
 
+## Built only when it is needed
+
+A report is registered on every request, because its figures arrive over
+REST. When its tabs or filters cost something to work out -- a product
+filter listing what has sold, a country filter, a tab shown only to a shop
+that has subscriptions -- hand those over as `build`, and keep only the menu
+settings in the array:
+
+```php
+Reports::register( 'my-analytics', [
+	'page_title'  => __( 'Analytics', 'my-plugin' ),
+	'menu_title'  => __( 'Analytics', 'my-plugin' ),
+	'parent_slug' => 'tools.php',
+	'capability'  => 'manage_options',
+	'build'       => fn(): array => [
+		'tabs'       => my_plugin_report_tabs(),
+		'filters'    => my_plugin_report_filters(),
+		'components' => my_plugin_report_components(),
+	],
+] );
+```
+
+The callback runs once, the first time anything asks about the report's
+contents: the page itself, one of its REST routes, `get_tabs()`,
+`get_config()`. The admin menu is drawn from the array, so the other screens
+never run it. What it returns is merged over the array, and the
+`sugarcommerce_reports_register` filter sees the two together, when it runs.
+`add_tab()`, `add_component()` and `add_export()` called before then are kept
+and applied on top of it. `is_built()` says whether it has run.
+
 ## Whose days: UTC or the site's
 
 A date range reaches every `data_callback` as `start` and `end` in UTC, for a

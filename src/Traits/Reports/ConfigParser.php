@@ -139,6 +139,14 @@ trait ConfigParser {
 	 * @return static
 	 */
 	public function add_tab( string $key, $tab ): static {
+		// Not built yet: kept until it is, and added on top of what the
+		// build puts there, so adding to a report does not build it.
+		if ( null !== $this->build ) {
+			$this->pending[] = [ 'add_tab', [ $key, $tab ] ];
+
+			return $this;
+		}
+
 		$this->set_tab( sanitize_key( $key ), $tab );
 		$this->sort_tabs();
 
@@ -157,6 +165,14 @@ trait ConfigParser {
 	 * @return static
 	 */
 	public function add_component( string $key, array $component ): static {
+		// Not built yet: kept until it is, and added on top of what the
+		// build puts there, so adding to a report does not build it.
+		if ( null !== $this->build ) {
+			$this->pending[] = [ 'add_component', [ $key, $component ] ];
+
+			return $this;
+		}
+
 		$first_tab = ! empty( $this->tabs ) ? (string) array_key_first( $this->tabs ) : 'default';
 		$component = $this->normalize_component( $key, $component, $first_tab );
 
@@ -179,6 +195,14 @@ trait ConfigParser {
 	 * @return static
 	 */
 	public function add_export( string $key, array $export ): static {
+		// Not built yet: kept until it is, and added on top of what the
+		// build puts there, so adding to a report does not build it.
+		if ( null !== $this->build ) {
+			$this->pending[] = [ 'add_export', [ $key, $export ] ];
+
+			return $this;
+		}
+
 		$first_tab = ! empty( $this->tabs ) ? (string) array_key_first( $this->tabs ) : 'default';
 		$export    = $this->normalize_export( $key, $export, $first_tab );
 

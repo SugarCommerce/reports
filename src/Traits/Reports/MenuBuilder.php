@@ -29,31 +29,31 @@ trait MenuBuilder {
      * @return void
      */
     public function register_menu(): void {
-        if ( ! empty( $this->config['parent_slug'] ) ) {
+        if ( ! empty( $this->menu_setting( 'parent_slug' ) ) ) {
             $this->hook_suffix = add_submenu_page(
-                    $this->config['parent_slug'],
-                    $this->config['page_title'],
-                    $this->config['menu_title'],
-                    $this->config['capability'],
-                    $this->config['menu_slug'],
+                    $this->menu_setting( 'parent_slug' ),
+                    $this->menu_setting( 'page_title' ),
+                    $this->menu_setting( 'menu_title' ),
+                    $this->menu_setting( 'capability' ),
+                    $this->menu_setting( 'menu_slug' ),
                     [ $this, 'render_page' ]
             );
         } else {
             $this->hook_suffix = add_menu_page(
-                    $this->config['page_title'],
-                    $this->config['menu_title'],
-                    $this->config['capability'],
-                    $this->config['menu_slug'],
+                    $this->menu_setting( 'page_title' ),
+                    $this->menu_setting( 'menu_title' ),
+                    $this->menu_setting( 'capability' ),
+                    $this->menu_setting( 'menu_slug' ),
                     [ $this, 'render_page' ],
-                    $this->config['icon'],
-                    $this->config['position']
+                    $this->menu_setting( 'icon' ),
+                    $this->menu_setting( 'position' )
             );
         }
 
-        // Register help tabs
-        if ( ! empty( $this->config['help_tabs'] ) || ! empty( $this->config['help_sidebar'] ) ) {
-            add_action( 'load-' . $this->hook_suffix, [ $this, 'register_help_tabs' ] );
-        }
+        // Help tabs, when the page loads. Whether there are any is a
+        // question for the configuration, which is only built for the page
+        // that shows it.
+        add_action( 'load-' . $this->hook_suffix, [ $this, 'register_help_tabs' ] );
 
         // And screen options. Here rather than in init_hooks() because both
         // of these hang off load-{$hook_suffix}, and the hook suffix is what
@@ -69,7 +69,7 @@ trait MenuBuilder {
     public function register_help_tabs(): void {
         $screen = get_current_screen();
 
-        if ( ! $screen ) {
+        if ( ! $screen || ( empty( $this->config['help_tabs'] ) && empty( $this->config['help_sidebar'] ) ) ) {
             return;
         }
 
@@ -140,8 +140,8 @@ trait MenuBuilder {
     public function fix_parent_menu_highlight( string $parent_file ): string {
         global $plugin_page;
 
-        if ( $plugin_page === $this->config['menu_slug'] ) {
-            return $this->config['parent_slug'];
+        if ( $plugin_page === $this->menu_setting( 'menu_slug' ) ) {
+            return $this->menu_setting( 'parent_slug' );
         }
 
         return $parent_file;
@@ -157,8 +157,8 @@ trait MenuBuilder {
     public function fix_submenu_highlight( ?string $submenu_file ): ?string {
         global $plugin_page;
 
-        if ( $plugin_page === $this->config['menu_slug'] ) {
-            return $this->config['menu_slug'];
+        if ( $plugin_page === $this->menu_setting( 'menu_slug' ) ) {
+            return $this->menu_setting( 'menu_slug' );
         }
 
         return $submenu_file;

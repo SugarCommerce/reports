@@ -57,6 +57,27 @@ class Reports {
     protected array $config;
 
     /**
+     * The configuration as it was registered, before any `build` callback.
+     *
+     * @var array
+     */
+    protected array $given = [];
+
+    /**
+     * What puts the rest of the configuration together, until it has.
+     *
+     * @var callable|null
+     */
+    protected $build = null;
+
+    /**
+     * Tabs, components and exports added before the build, to add after it.
+     *
+     * @var array<int, array{0: string, 1: array}>
+     */
+    protected array $pending = [];
+
+    /**
      * Parsed tabs array.
      *
      * @var array
@@ -159,27 +180,28 @@ class Reports {
         // is fifteen entries, most of them near-duplicates of a neighbour.
         $this->defaults['date_presets'] = [];
 
-        /**
-         * Filter a report's configuration as it is registered.
-         *
-         * How one plugin adds a tab, a component or an export to another's
-         * report without that plugin having to offer a filter of its own.
-         * Added before the report is registered; for one that already is,
-         * see add_tab() and add_component().
-         *
-         * @param array  $config The configuration Reports::register() was handed.
-         * @param string $id     The report's id.
-         */
-        $config = (array) apply_filters( Runtime::hook( 'register' ), $config, $this->id );
-
-        $this->config = wp_parse_args( $config, $this->defaults );
-
         // Set defaults based on ID if not provided
-        if ( empty( $this->config['menu_slug'] ) ) {
-            $this->config['menu_slug'] = $this->id;
+        if ( empty( $config['menu_slug'] ) ) {
+            $config['menu_slug'] = $this->id;
         }
 
-        $this->parse_config();
+        $build = $config['build'] ?? null;
+
+        unset( $config['build'] );
+
+        $this->given = $config;
+
+        if ( is_callable( $build ) ) {
+            // Put together when something first asks for it -- the page,
+            // a REST route, get_tabs() -- and not now. Until then the menu
+            // is drawn from what was handed over here, and the properties
+            // below are missing so that reading one builds them all.
+            $this->build = $build;
+
+            unset( $this->config, $this->tabs, $this->components, $this->exports );
+        } else {
+            $this->resolve( $config );
+        }
 
         // Register with the central registry
         Registry::register( $this->id, $this );
@@ -188,6 +210,118 @@ class Reports {
         RestApi::register();
 
         $this->init_hooks();
+    }
+
+    /**
+     * Build a report whose configuration was left to a `build` callback.
+     *
+     * Reached by reading `config`, `tabs`, `components` or `exports` before
+     * they exist, from anywhere in the class: they are unset until the
+     * callback has run, which is what makes reading one run it.
+     *
+     * @param string $name The property asked for.
+     *
+     * @return mixed The property, by reference, so `$this->tabs[ $key ] = …`
+     *               writes to it.
+     */
+    public function &__get( string $name ): mixed {
+        if ( ! in_array( $name, [ 'config', 'tabs', 'components', 'exports' ], true ) ) {
+            $missing = null;
+
+            return $missing;
+        }
+
+        $this->build_now();
+
+        return $this->{$name};
+    }
+
+    /**
+     * Run the `build` callback, if it has not run.
+     *
+     * @return void
+     */
+    protected function build_now(): void {
+        if ( null === $this->build ) {
+            return;
+        }
+
+        $build       = $this->build;
+        $this->build = null;
+
+        $this->tabs       = [];
+        $this->components = [];
+        $this->exports    = [];
+
+        $this->resolve( array_merge( $this->given, (array) $build( $this ) ) );
+
+        foreach ( $this->pending as [ $method, $args ] ) {
+            $this->{$method}( ...$args );
+        }
+
+        $this->pending = [];
+    }
+
+    /**
+     * Whether the configuration has been put together yet.
+     *
+     * A report registered with a `build` callback says false until something
+     * has asked for its tabs, components or settings.
+     *
+     * @return bool
+     */
+    public function is_built(): bool {
+        return null === $this->build;
+    }
+
+    /**
+     * Filter, settle and parse a whole configuration.
+     *
+     * @param array $config What was registered, with whatever `build` returned.
+     *
+     * @return void
+     */
+    protected function resolve( array $config ): void {
+        /**
+         * Filter a report's configuration as it is registered.
+         *
+         * How one plugin adds a tab, a component or an export to another's
+         * report without that plugin having to offer a filter of its own.
+         * Added before the report is registered; for one that already is,
+         * see add_tab() and add_component(). For a report registered with a
+         * `build` callback this runs when it is built, with what the
+         * callback returned.
+         *
+         * @param array  $config The configuration Reports::register() was handed.
+         * @param string $id     The report's id.
+         */
+        $config = (array) apply_filters( Runtime::hook( 'register' ), $config, $this->id );
+
+        $this->config = wp_parse_args( $config, $this->defaults );
+
+        if ( empty( $this->config['menu_slug'] ) ) {
+            $this->config['menu_slug'] = $this->id;
+        }
+
+        $this->parse_config();
+    }
+
+    /**
+     * One of the settings the menu entry is made from.
+     *
+     * Read from the registered configuration while the report is not built,
+     * so drawing the admin menu on every screen does not build it.
+     *
+     * @param string $key Setting.
+     *
+     * @return mixed
+     */
+    protected function menu_setting( string $key ): mixed {
+        if ( null === $this->build ) {
+            return $this->config[ $key ] ?? null;
+        }
+
+        return $this->given[ $key ] ?? $this->defaults[ $key ] ?? null;
     }
 
     /**
@@ -230,7 +364,7 @@ class Reports {
         add_filter( 'admin_body_class', [ $this, 'add_body_class' ] );
 
         // Fix menu highlight for submenu pages
-        if ( ! empty( $this->config['parent_slug'] ) ) {
+        if ( ! empty( $this->menu_setting( 'parent_slug' ) ) ) {
             add_filter( 'parent_file', [ $this, 'fix_parent_menu_highlight' ] );
             add_filter( 'submenu_file', [ $this, 'fix_submenu_highlight' ] );
         }

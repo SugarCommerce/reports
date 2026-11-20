@@ -44,10 +44,6 @@ trait ScreenOptions {
 	 * @return void
 	 */
 	protected function init_screen_options(): void {
-		if ( ! ( $this->config['show_screen_options'] ?? true ) ) {
-			return;
-		}
-
 		add_filter( 'screen_settings', [ $this, 'render_screen_options' ], 10, 2 );
 	}
 
@@ -72,6 +68,12 @@ trait ScreenOptions {
 	 */
 	public function render_screen_options( string $settings, $screen ): string {
 		if ( ! is_object( $screen ) || ( $screen->id ?? '' ) !== $this->hook_suffix ) {
+			return $settings;
+		}
+
+		// Asked here and not as the filter is added: the configuration is
+		// only built for the page that shows it.
+		if ( ! ( $this->config['show_screen_options'] ?? true ) ) {
 			return $settings;
 		}
 
