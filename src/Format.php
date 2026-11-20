@@ -35,7 +35,7 @@ final class Format {
 	/**
 	 * The arrow a change is shown with, by direction.
 	 */
-	public const CHANGE_ICONS = [
+	public const array CHANGE_ICONS = [
 		'up'      => 'heroicons-outline:arrow-up',
 		'down'    => 'heroicons-outline:arrow-down',
 		'neutral' => 'heroicons-outline:minus',
@@ -44,7 +44,7 @@ final class Format {
 	/**
 	 * The icon a tile has when it names none.
 	 */
-	public const TILE_ICON = 'heroicons-outline:chart-bar';
+	public const string TILE_ICON = 'heroicons-outline:chart-bar';
 
 	/**
 	 * A value, in the format a component asked for.

@@ -13,7 +13,7 @@ use SugarCommerce\Reports\Format;
 use SugarCommerce\Reports\Registry;
 use SugarCommerce\Reports\Reports;
 use SugarCommerce\Reports\RestApi;
-use SugarCommerce\Reports\Traits\ComponentRenderer;
+use SugarCommerce\Reports\Traits\Reports\ComponentRenderer;
 use PHPUnit\Framework\TestCase;
 use WP_REST_Request;
 

@@ -10,7 +10,7 @@
 
 declare( strict_types=1 );
 
-namespace SugarCommerce\Reports\Traits;
+namespace SugarCommerce\Reports\Traits\Reports;
 
 /**
  * The tables inside a report, which are not list tables.

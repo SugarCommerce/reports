@@ -10,8 +10,8 @@
 
 import { describe, expect, test } from 'vitest';
 
-import { handleOf, resolveConfig } from '../../src/js/lib/config';
-import { fill, translator } from '../../src/js/lib/text';
+import { handleOf, resolveConfig } from '../../assets/js/lib/config';
+import { fill, translator } from '../../assets/js/lib/text';
 
 describe( 'settings', () => {
 	const registry = {

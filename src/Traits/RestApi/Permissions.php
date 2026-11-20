@@ -10,7 +10,7 @@
 
 declare( strict_types=1 );
 
-namespace SugarCommerce\Reports\Rest;
+namespace SugarCommerce\Reports\Traits\RestApi;
 
 use SugarCommerce\Reports\Registry;
 use WP_Error;
@@ -61,6 +61,13 @@ trait Permissions {
 
 		if ( ! $report ) {
 			return new WP_Error( 'invalid_report', __( 'Invalid report.', 'sugarcommerce' ), [ 'status' => 404 ] );
+		}
+
+		// An export is its starter's. The download link carries the token in
+		// its query string, so it reaches browser history and server logs;
+		// another user who can read the report must not take the file.
+		if ( isset( $config['user_id'] ) && (int) $config['user_id'] !== get_current_user_id() ) {
+			return new WP_Error( 'rest_forbidden', __( 'Permission denied.', 'sugarcommerce' ), [ 'status' => 403 ] );
 		}
 
 		$capability = $report->get_config( 'capability', 'manage_options' );

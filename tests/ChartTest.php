@@ -11,7 +11,7 @@ namespace SugarCommerce\Reports\Tests;
 
 use SugarCommerce\Reports\Datasets;
 use SugarCommerce\Reports\Format;
-use SugarCommerce\Reports\Traits\ComponentRenderer;
+use SugarCommerce\Reports\Traits\Reports\ComponentRenderer;
 use PHPUnit\Framework\TestCase;
 
 /**

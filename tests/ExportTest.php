@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace SugarCommerce\Reports\Tests;
 
-use SugarCommerce\Reports\Traits\ExportHandler;
+use SugarCommerce\Reports\Traits\Reports\ExportHandler;
 use PHPUnit\Framework\TestCase;
 
 /**

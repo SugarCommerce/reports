@@ -8,10 +8,10 @@
 import jQuery from 'jquery';
 import { afterEach, describe, expect, test } from 'vitest';
 
-import { data, parseData, setData } from '../../src/js/lib/data';
-import { hide, show, toggle } from '../../src/js/lib/dom';
-import { merge } from '../../src/js/lib/merge';
-import { param } from '../../src/js/lib/query';
+import { data, parseData, setData } from '../../assets/js/lib/data';
+import { hide, show, toggle } from '../../assets/js/lib/dom';
+import { merge } from '../../assets/js/lib/merge';
+import { param } from '../../assets/js/lib/query';
 
 afterEach( () => {
 	document.head.innerHTML = '';

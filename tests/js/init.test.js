@@ -25,7 +25,7 @@ afterEach( cleanup );
  * @param {string} dir A folder.
  * @return {Object<string, string>} Path => text.
  */
-function sources( dir = join( __dirname, '../../src/js' ) ) {
+function sources( dir = join( __dirname, '../../assets/js' ) ) {
 	return readdirSync( dir ).reduce( ( found, name ) => {
 		const path = join( dir, name );
 
@@ -103,7 +103,7 @@ describe( 'the sources', () => {
 			Object.keys( files ).filter( ( path ) =>
 				/Sugar[Cc]ommerceReports/.test( files[ path ] )
 			)
-		).toEqual( [ join( __dirname, '../../src/js/lib/config.js' ) ] );
+		).toEqual( [ join( __dirname, '../../assets/js/lib/config.js' ) ] );
 	} );
 
 	test( 'no global Chart and no ReportsController', () => {

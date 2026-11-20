@@ -10,11 +10,11 @@
 
 declare( strict_types=1 );
 
-namespace SugarCommerce\Reports\Rest;
+namespace SugarCommerce\Reports\Traits\RestApi;
 
 use SugarCommerce\Reports\Format;
 use SugarCommerce\Reports\Registry;
-use Exception;
+use Throwable;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -69,8 +69,8 @@ trait ComponentData {
 				'data'    => $data,
 				'type'    => $component['type'] ?? 'unknown',
 			] );
-		} catch ( Exception $e ) {
-			return new WP_Error( 'callback_error', $e->getMessage(), [ 'status' => 500 ] );
+		} catch ( Throwable $e ) {
+			return new WP_Error( 'callback_error', self::failure( $e ), [ 'status' => 500 ] );
 		}
 	}
 
@@ -203,10 +203,10 @@ trait ComponentData {
 							'data' => $raw_data,
 						];
 				}
-			} catch ( Exception $e ) {
+			} catch ( Throwable $e ) {
 				$components_data[ $component_id ] = [
 					'type'  => $type,
-					'error' => $e->getMessage(),
+					'error' => self::failure( $e ),
 				];
 			}
 		}
@@ -253,10 +253,10 @@ trait ComponentData {
 						'change'           => $change,
 						'change_direction' => $change_direction,
 					];
-				} catch ( Exception $e ) {
+				} catch ( Throwable $e ) {
 					$components_data[ $full_tile_id ] = [
 						'type'  => 'tile',
-						'error' => $e->getMessage(),
+						'error' => self::failure( $e ),
 					];
 				}
 			}

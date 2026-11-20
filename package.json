@@ -5,11 +5,11 @@
   "description": "The reports screen's script -- the date range, refreshing in place, charts drawn with Chart.js, table paging and sorting, CSV exports -- built to assets/build with @wordpress/scripts.",
   "license": "GPL-2.0-or-later",
   "scripts": {
-    "build": "wp-scripts build reports=./src/js/reports.js --output-path=assets/build",
-    "start": "wp-scripts start reports=./src/js/reports.js --output-path=assets/build",
+    "build": "wp-scripts build reports=./assets/js/reports.js --output-path=assets/build",
+    "start": "wp-scripts start reports=./assets/js/reports.js --output-path=assets/build",
     "test:js": "wp-scripts test-unit-js",
-    "lint:js": "wp-scripts lint-js src/js tests/js",
-    "format:js": "wp-scripts format src/js tests/js"
+    "lint:js": "wp-scripts lint-js assets/js tests/js",
+    "format:js": "wp-scripts format assets/js tests/js"
   },
   "devDependencies": {
     "@wordpress/api-fetch": "^8.1.0",

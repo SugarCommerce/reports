@@ -10,7 +10,7 @@
 
 declare( strict_types=1 );
 
-namespace SugarCommerce\Reports\Traits;
+namespace SugarCommerce\Reports\Traits\Reports;
 
 use SugarCommerce\Reports\Utils\Runtime;
 

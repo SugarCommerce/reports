@@ -12,16 +12,16 @@ declare( strict_types=1 );
 
 namespace SugarCommerce\Reports;
 
-use SugarCommerce\Reports\Traits\AssetManager;
-use SugarCommerce\Reports\Traits\ComponentRenderer;
-use SugarCommerce\Reports\Traits\ConfigParser;
-use SugarCommerce\Reports\Traits\DateRangeHandler;
-use SugarCommerce\Reports\Traits\ExportHandler;
-use SugarCommerce\Reports\Traits\Layout;
-use SugarCommerce\Reports\Traits\MenuBuilder;
-use SugarCommerce\Reports\Traits\PageRenderer;
-use SugarCommerce\Reports\Traits\ScreenOptions;
-use SugarCommerce\Reports\Traits\TabManager;
+use SugarCommerce\Reports\Traits\Reports\AssetManager;
+use SugarCommerce\Reports\Traits\Reports\ComponentRenderer;
+use SugarCommerce\Reports\Traits\Reports\ConfigParser;
+use SugarCommerce\Reports\Traits\Reports\DateRangeHandler;
+use SugarCommerce\Reports\Traits\Reports\ExportHandler;
+use SugarCommerce\Reports\Traits\Reports\Layout;
+use SugarCommerce\Reports\Traits\Reports\MenuBuilder;
+use SugarCommerce\Reports\Traits\Reports\PageRenderer;
+use SugarCommerce\Reports\Traits\Reports\ScreenOptions;
+use SugarCommerce\Reports\Traits\Reports\TabManager;
 use SugarCommerce\Reports\Utils\Runtime;
 
 /**

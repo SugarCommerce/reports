@@ -5,7 +5,7 @@
 
 import { vi } from 'vitest';
 
-import { initReports } from '../../../src/js/reports/init';
+import { initReports } from '../../../assets/js/reports/init';
 
 export const STRINGS = {
 	loading: 'Loading...',

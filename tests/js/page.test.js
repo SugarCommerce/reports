@@ -6,7 +6,7 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { revealCurrentSection } from '../../src/js/reports/page';
+import { revealCurrentSection } from '../../assets/js/reports/page';
 import {
 	cleanup,
 	click,

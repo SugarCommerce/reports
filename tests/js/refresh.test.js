@@ -5,8 +5,8 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { translator } from '../../src/js/lib/text';
-import { updatedText } from '../../src/js/reports/refresh';
+import { translator } from '../../assets/js/lib/text';
+import { updatedText } from '../../assets/js/reports/refresh';
 import {
 	cleanup,
 	click,

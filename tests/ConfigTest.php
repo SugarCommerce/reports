@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace SugarCommerce\Reports\Tests;
 
-use SugarCommerce\Reports\Traits\ConfigParser;
+use SugarCommerce\Reports\Traits\Reports\ConfigParser;
 use PHPUnit\Framework\TestCase;
 
 /**

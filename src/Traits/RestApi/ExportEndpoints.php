@@ -10,10 +10,10 @@
 
 declare( strict_types=1 );
 
-namespace SugarCommerce\Reports\Rest;
+namespace SugarCommerce\Reports\Traits\RestApi;
 
 use SugarCommerce\Reports\Registry;
-use Exception;
+use Throwable;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -63,8 +63,8 @@ trait ExportEndpoints {
 
 		try {
 			$total_items = call_user_func( $export_config['total_callback'], $args );
-		} catch ( Exception $e ) {
-			return new WP_Error( 'callback_error', $e->getMessage(), [ 'status' => 500 ] );
+		} catch ( Throwable $e ) {
+			return new WP_Error( 'callback_error', self::failure( $e ), [ 'status' => 500 ] );
 		}
 
 		if ( is_wp_error( $total_items ) ) {
@@ -89,6 +89,7 @@ trait ExportEndpoints {
 		// Only store serializable data - no callbacks/closures
 		set_transient( self::export_key( $export_token ), [
 			'report_id'   => $report_id,
+			'user_id'     => get_current_user_id(),
 			'export_id'   => $export_id,
 			'filters'     => $filters,
 			'date_range'  => $date_range,
@@ -141,8 +142,8 @@ trait ExportEndpoints {
 
 		try {
 			$data = call_user_func( $export_config['data_callback'], $args );
-		} catch ( Exception $e ) {
-			return new WP_Error( 'callback_error', $e->getMessage(), [ 'status' => 500 ] );
+		} catch ( Throwable $e ) {
+			return new WP_Error( 'callback_error', self::failure( $e ), [ 'status' => 500 ] );
 		}
 
 		if ( is_wp_error( $data ) ) {

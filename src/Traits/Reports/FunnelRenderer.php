@@ -10,7 +10,7 @@
 
 declare( strict_types=1 );
 
-namespace SugarCommerce\Reports\Traits;
+namespace SugarCommerce\Reports\Traits\Reports;
 
 /**
  * How many of those who started something went on to finish it.

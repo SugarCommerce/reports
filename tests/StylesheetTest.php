@@ -37,14 +37,16 @@ final class StylesheetTest extends TestCase {
 	private function rendered(): string {
 		$rendered = '';
 
-		$files = new \RecursiveIteratorIterator(
-			new \RecursiveDirectoryIterator( dirname( __DIR__ ) . '/src' )
-		);
+		// The PHP, src/, and the script's sources, assets/js, alike.
+		foreach ( [ '/src', '/assets/js' ] as $folder ) {
+			$files = new \RecursiveIteratorIterator(
+				new \RecursiveDirectoryIterator( dirname( __DIR__ ) . $folder )
+			);
 
-		// The PHP and the script's sources, src/js, alike.
-		foreach ( $files as $file ) {
-			if ( $file->isFile() && in_array( $file->getExtension(), [ 'php', 'js' ], true ) ) {
-				$rendered .= (string) file_get_contents( $file->getPathname() );
+			foreach ( $files as $file ) {
+				if ( $file->isFile() && in_array( $file->getExtension(), [ 'php', 'js' ], true ) ) {
+					$rendered .= (string) file_get_contents( $file->getPathname() );
+				}
 			}
 		}
 

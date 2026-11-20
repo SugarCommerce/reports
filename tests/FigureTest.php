@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace SugarCommerce\Reports\Tests;
 
-use SugarCommerce\Reports\Traits\ComponentRenderer;
+use SugarCommerce\Reports\Traits\Reports\ComponentRenderer;
 use PHPUnit\Framework\TestCase;
 
 /**

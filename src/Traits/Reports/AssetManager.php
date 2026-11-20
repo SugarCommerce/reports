@@ -10,7 +10,7 @@
 
 declare( strict_types=1 );
 
-namespace SugarCommerce\Reports\Traits;
+namespace SugarCommerce\Reports\Traits\Reports;
 
 use SugarCommerce\Fields\Assets as FieldAssets;
 use SugarCommerce\Plugin\Assets;
@@ -68,7 +68,7 @@ trait AssetManager {
 			'css/reports.css'
 		);
 
-		// Built from src/js into assets/build, with Chart.js bundled in. It
+		// Built from assets/js into assets/build, with Chart.js bundled in. It
 		// imports wp-api-fetch, which carries the REST requests, so a nonce
 		// that ran out while the report was open is renewed, not answered
 		// 403; the build's manifest names it.

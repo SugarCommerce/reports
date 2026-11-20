@@ -10,7 +10,7 @@
 
 declare( strict_types=1 );
 
-namespace SugarCommerce\Reports\Rest;
+namespace SugarCommerce\Reports\Traits\RestApi;
 
 use WP_REST_Server;
 

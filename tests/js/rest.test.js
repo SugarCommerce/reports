@@ -8,7 +8,7 @@
 
 import { describe, expect, test, vi } from 'vitest';
 
-import { createRest, failure, postJson } from '../../src/js/lib/rest';
+import { createRest, failure, postJson } from '../../assets/js/lib/rest';
 
 const URL_BASE = 'https://example.test/wp-json/r/v1/';
 

@@ -53,7 +53,7 @@ final class ApiFetchTest extends TestCase {
 	 * @return string[]
 	 */
 	private static function sources(): array {
-		$files = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( dirname( __DIR__ ) . '/src/js' ) );
+		$files = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( dirname( __DIR__ ) . '/assets/js' ) );
 		$paths = [];
 
 		foreach ( $files as $file ) {

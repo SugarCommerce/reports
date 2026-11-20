@@ -362,7 +362,7 @@ you have printed the component.
 
 ## The scripts
 
-Plain JavaScript in ES modules (`src/js`), each with one job, built by
+Plain JavaScript in ES modules (`assets/js`), each with one job, built by
 `@wordpress/scripts` into `assets/build` -- one file, `reports.js`, with a
 `reports.asset.php` naming the WordPress scripts it imports (`wp-api-fetch`,
 `wp-dom-ready`) and a version that changes with its contents.
@@ -426,40 +426,38 @@ npm run lint:js
 The build's files are what ship, with the sources beside them. CI builds
 again and fails when the result differs from what was committed.
 
-## Moving from arraypress/wp-*
+## Security
 
-From `arraypress/wp-register-reports` (`ArrayPress\RegisterReports`). Every
-configuration key, component type, method on a report and `Datasets` method
-keeps its name; what a screen shows is the same. It now builds on
-`sugarcommerce/fields`, `sugarcommerce/dates`, `sugarcommerce/money`,
-`sugarcommerce/text` and `sugarcommerce/plugin` in place of their
-`arraypress/wp-*` predecessors.
+* Reading what you may not: every route asks the report's capability, and
+  an export batch or download the capability of the report its session
+  names, not of one the request names.
+* Someone else's export: an export session belongs to the user who started
+  it, so a download link found in a log or a browser's history is refused to
+  anyone else.
+* Leaking internals: a data callback that throws answers "The report could
+  not be read"; its message is shown only under `WP_DEBUG` with
+  `WP_DEBUG_DISPLAY`.
+* Spreadsheet formulas in an export: every CSV cell is written through
+  `SugarCommerce\Text\Csv`, which defuses a leading `=`, `+`, `-`, `@`.
+* A file outside the exports folder: a download is read only when its path
+  resolves inside the report's own export directory, which is denied to the
+  web.
+* Markup in a cell: cells are formatted and `wp_kses_post()`ed on the server
+  for the page and the refresh alike; an action's `{placeholders}` are
+  URL-encoded.
 
-| Old | New |
-|---|---|
-| `ArrayPress\RegisterReports\*` | `SugarCommerce\Reports\*` |
-| `register_reports( $id, $config )` | `Reports::register( $id, $config )` |
-| `get_reports( $id )` | `Reports::get( $id )` (the id is read as a key, as it is registered) |
-| filter `reports_register` (`{prefix}_reports_register`) | `sugarcommerce_reports_register` (`Runtime::hook( 'register' )`) |
-| filter `reports_render_component` | `sugarcommerce_reports_render_component` (`Runtime::hook( 'render_component' )`) |
-| REST namespace `reports/v1` (`{prefix}-reports/v1`) | `sugarcommerce-reports/v1` (`Runtime::rest_namespace()`) |
-| script and style handles `reports`, `reports-chartjs` | `sugarcommerce-reports` (`Runtime::handle()`); Chart.js is bundled into the script, with no handle of its own |
-| `window.ArrayPressReports[handle]`, `window.ReportsAdmin` | `window.SugarCommerceReports[handle]`, `window.SugarcommerceReportsAdmin` |
-| transients `reports_export_*`, uploads folder `reports_exports` | `sugarcommerce_reports_export_*`, `sugarcommerce_reports_exports` (`Runtime::key()`) |
-| user meta for hidden components, `reports_hidden_components_{id}` | `sugarcommerce_reports_hidden_components_{id}` (`Runtime::key()`) |
-| icon class `arraypress-icon` | `sugarcommerce-icon` |
-| `format_money()` from wp-money | `SugarCommerce\Money\Money::format()` |
-| `Format::minor_units( $value )`: a decimal amount times 100 | `Format::minor_units( $value, $currency )`: times the currency's own places, so `'99.00'` yen is 99 |
-| CSV cells defused by the library's own `fputcsv()` wrapper | written by `SugarCommerce\Text\Csv`: the same apostrophe on a formula, numbers left alone, and a cell with a space or a semicolon quoted |
-| `arraypress_enqueue_composer_style()` / `_script()` | `SugarCommerce\Plugin\Assets::enqueue_style()` / `enqueue_script()` |
-| text domain `arraypress` | `sugarcommerce` |
-| the export download's own `Cache-Control`, `Pragma` and `Expires` headers | core's `nocache_headers()` (and its `nocache_headers` filter) |
+## Source layout
 
-Every `reports-*` CSS class, body class and data attribute, and the
-`date_preset`, `date_start`, `date_end`, `tab` and `filter_*` query
-arguments, are unchanged, so a link to a report and a stylesheet aimed at one
-keep working. A site that filtered the old hook names, or saved hidden
-components under the old key, needs the new one.
+* `src/Reports.php`: one report screen; its jobs are traits in
+  `src/Traits/Reports/` (config, tabs, menus, the date range, screen
+  options, the page, components and their renderers, exports).
+* `src/RestApi.php`: the routes and the checks they share, with
+  `src/Traits/RestApi/` (routes, permissions, component data, exports,
+  preferences).
+* `src/Registry.php`, `Datasets.php` (series for charts), `Format.php`, and
+  `src/Utils/Runtime.php` (hook, handle and route names).
+* `src/` is PHP only. The script's sources are in `assets/js/`, built to
+  `assets/build/`; the styles are in `assets/css/`.
 
 ## Requirements
 

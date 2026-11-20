@@ -5,7 +5,7 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { gatherExportFilters } from '../../src/js/reports/exports';
+import { gatherExportFilters } from '../../assets/js/reports/exports';
 import { cleanup, click, layout, SETTINGS, startReport } from './support/page';
 
 beforeEach( () => {

@@ -14,12 +14,13 @@ namespace SugarCommerce\Reports;
 
 use SugarCommerce\Dates\Site;
 use SugarCommerce\Reports\Utils\Runtime;
+use Throwable;
 use WP_REST_Request;
-use SugarCommerce\Reports\Rest\ComponentData;
-use SugarCommerce\Reports\Rest\ExportEndpoints;
-use SugarCommerce\Reports\Rest\Permissions;
-use SugarCommerce\Reports\Rest\Preferences;
-use SugarCommerce\Reports\Rest\Routes;
+use SugarCommerce\Reports\Traits\RestApi\ComponentData;
+use SugarCommerce\Reports\Traits\RestApi\ExportEndpoints;
+use SugarCommerce\Reports\Traits\RestApi\Permissions;
+use SugarCommerce\Reports\Traits\RestApi\Preferences;
+use SugarCommerce\Reports\Traits\RestApi\Routes;
 
 /**
  * Class RestApi
@@ -44,6 +45,25 @@ class RestApi {
 	 */
 	public static function rest_namespace(): string {
 		return Runtime::rest_namespace();
+	}
+
+	/**
+	 * What the browser is told when a consumer's callback throws.
+	 *
+	 * The exception is somebody else's -- a database error with its query, a
+	 * path, an API's reply -- so its message is shown only where core shows
+	 * errors, under WP_DEBUG with WP_DEBUG_DISPLAY on.
+	 *
+	 * @param Throwable $error What was thrown.
+	 *
+	 * @return string
+	 */
+	private static function failure( Throwable $error ): string {
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_DISPLAY' ) && WP_DEBUG_DISPLAY ) {
+			return $error->getMessage();
+		}
+
+		return __( 'The report could not be read.', 'sugarcommerce' );
 	}
 
 	/**

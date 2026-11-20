@@ -358,7 +358,7 @@ if ( ! class_exists( 'WP_REST_Server' ) ) {
 
 if ( ! function_exists( 'get_current_user_id' ) ) {
 	function get_current_user_id() {
-		return 1;
+		return (int) ( $GLOBALS['rp_user_id'] ?? 1 );
 	}
 }
 

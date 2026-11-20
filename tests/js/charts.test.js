@@ -10,15 +10,15 @@ import {
 	chartOptions,
 	createCharts,
 	markEmptyChart,
-} from '../../src/js/reports/charts/charts';
+} from '../../assets/js/reports/charts/charts';
 import {
 	fadeDown,
 	fadeUnder,
 	hexToRgba,
 	PALETTE,
 	styleDataset,
-} from '../../src/js/reports/charts/style';
-import { translator } from '../../src/js/lib/text';
+} from '../../assets/js/reports/charts/style';
+import { translator } from '../../assets/js/lib/text';
 import { chartConfig, FakeChart, STRINGS } from './support/page';
 
 const t = translator( STRINGS );

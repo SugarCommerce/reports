@@ -6,19 +6,19 @@
 
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
-import { data, setData } from '../../src/js/lib/data';
-import { translator } from '../../src/js/lib/text';
+import { data, setData } from '../../assets/js/lib/data';
+import { translator } from '../../assets/js/lib/text';
 import {
 	applyPagination,
 	pageWindow,
-} from '../../src/js/reports/tables/paging';
+} from '../../assets/js/reports/tables/paging';
 import {
 	escapeJs,
 	readTableConfig,
 	readTableConfigs,
 	updateTable,
-} from '../../src/js/reports/tables/rows';
-import { compareCells } from '../../src/js/reports/tables/sort';
+} from '../../assets/js/reports/tables/rows';
+import { compareCells } from '../../assets/js/reports/tables/sort';
 import {
 	cleanup,
 	click,

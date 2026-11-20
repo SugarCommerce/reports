@@ -10,7 +10,7 @@
 
 declare( strict_types=1 );
 
-namespace SugarCommerce\Reports\Traits;
+namespace SugarCommerce\Reports\Traits\Reports;
 
 use SugarCommerce\Reports\Format;
 
@@ -33,7 +33,7 @@ trait ChartRenderer {
      *
      * @var string
      */
-    private const MUTED = '#8a8d93';
+    private const string MUTED = '#8a8d93';
 
     /**
      * Render a chart component.

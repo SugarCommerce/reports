@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 use SugarCommerce\Plugin\Assets;
 
 /**
- * The script is built from src/js into assets/build, and the build is
+ * The script is built from assets/js into assets/build, and the build is
  * committed: Composer and Strauss copy a package as it is, with nothing run
  * at install. These keep the build and the PHP that loads it in step.
  */
@@ -27,7 +27,7 @@ final class ScriptsTest extends TestCase {
 	/**
 	 * A file of the package, for the asset helper to find it from.
 	 */
-	private const FILE = __DIR__ . '/../src/Traits/AssetManager.php';
+	private const FILE = __DIR__ . '/../src/Traits/Reports/AssetManager.php';
 
 	/**
 	 * Every entry is built, with the manifest @wordpress/scripts writes
@@ -72,12 +72,11 @@ final class ScriptsTest extends TestCase {
 	}
 
 	/**
-	 * The sources ship beside the build, and nothing loads a script from
-	 * the old hand-written folder.
+	 * The sources ship in assets/js beside the build, and nothing loads one
+	 * of them directly: only the build is enqueued.
 	 */
-	public function test_nothing_loads_the_old_scripts(): void {
-		$this->assertDirectoryDoesNotExist( dirname( __DIR__ ) . '/assets/js' );
-		$this->assertFileExists( dirname( __DIR__ ) . '/src/js/reports.js' );
+	public function test_nothing_loads_the_sources(): void {
+		$this->assertFileExists( dirname( __DIR__ ) . '/assets/js/reports.js' );
 
 		foreach ( glob( dirname( __DIR__ ) . '/src/{,*/,*/*/}*.php', GLOB_BRACE ) as $file ) {
 			$this->assertStringNotContainsString( "'js/", (string) file_get_contents( $file ), basename( $file ) );

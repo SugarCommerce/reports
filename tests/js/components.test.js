@@ -15,7 +15,7 @@ import {
 	updateProgress,
 	updateStatList,
 	updateTile,
-} from '../../src/js/reports/components';
+} from '../../assets/js/reports/components';
 import { ARROWS } from './support/page';
 
 afterEach( () => {

@@ -10,9 +10,9 @@ declare( strict_types=1 );
 namespace SugarCommerce\Reports\Tests;
 
 use SugarCommerce\Reports\Format;
-use SugarCommerce\Reports\Traits\DateRangeHandler;
-use SugarCommerce\Reports\Traits\PageRenderer;
-use SugarCommerce\Reports\Traits\TabManager;
+use SugarCommerce\Reports\Traits\Reports\DateRangeHandler;
+use SugarCommerce\Reports\Traits\Reports\PageRenderer;
+use SugarCommerce\Reports\Traits\Reports\TabManager;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -262,7 +262,7 @@ final class ChromeTest extends TestCase {
 	 * The busy state is core's, so it spins and respects reduced motion.
 	 */
 	public function test_refreshing_uses_cores_updating_message(): void {
-		$js = (string) file_get_contents( dirname( __DIR__ ) . '/src/js/reports/refresh.js' );
+		$js = (string) file_get_contents( dirname( __DIR__ ) . '/assets/js/reports/refresh.js' );
 
 		$this->assertStringContainsString( "classList.add( 'refreshing', 'updating-message' )", $js );
 		$this->assertStringContainsString( "classList.remove( 'refreshing', 'updating-message' )", $js );

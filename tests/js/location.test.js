@@ -12,7 +12,7 @@ import {
 	currentStart,
 	currentTab,
 	rangeUrl,
-} from '../../src/js/reports/location';
+} from '../../assets/js/reports/location';
 
 const BASE = 'https://example.test/wp-admin/admin.php?page=reports';
 

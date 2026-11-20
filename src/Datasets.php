@@ -31,7 +31,7 @@ final class Datasets {
 	 *
 	 * The months of a year.
 	 */
-	public const BARS_MAX = 12;
+	public const int BARS_MAX = 12;
 
 	/**
 	 * A line with a fade under it.
