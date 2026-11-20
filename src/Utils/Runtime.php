@@ -33,9 +33,8 @@ use SugarCommerce\Plugin\Build;
  *   appended rather than replaced and dispatch runs the first whose methods
  *   match. The plugin that registered first answers the other's requests,
  *   under its own capability and its own report registry.
- * - Every callback on a shared `wp_ajax_*` action runs in turn, and the
- *   download handler `exit`s after `readfile()`. Whichever plugin registered
- *   second could never serve an export at all.
+ *   That includes the export download, which is a REST route streamed from
+ *   `rest_pre_serve_request` -- there is no admin-ajax or admin-post handler.
  * - A shared transient prefix lets one plugin read and delete the other's
  *   export session.
  *
