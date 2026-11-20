@@ -103,7 +103,7 @@ trait ExportEndpoints {
 			'success'      => true,
 			'export_token' => $export_token,
 			'total_items'  => $total_items,
-			'batch_size'   => self::BATCH_SIZE,
+			'batch_size'   => self::batch_size( $export_config ),
 		] );
 	}
 
@@ -133,11 +133,16 @@ trait ExportEndpoints {
 			return new WP_Error( 'invalid_config', __( 'Export config not found.', 'sugarcommerce' ), [ 'status' => 400 ] );
 		}
 
+		$size = self::batch_size( $export_config );
 		$args = [
 			'date_range' => $config['date_range'],
 			'filters'    => $config['filters'],
-			'offset'     => $batch * self::BATCH_SIZE,
-			'limit'      => self::BATCH_SIZE,
+			'offset'     => $batch * $size,
+			'limit'      => $size,
+			// Where the last batch stopped, when the rows said: the next
+			// batch starts after it instead of counting its way past every
+			// row before, which grows slower the further an export gets.
+			'after'      => $config['cursors'][ $batch ] ?? null,
 		];
 
 		try {
@@ -150,12 +155,26 @@ trait ExportEndpoints {
 			return $data;
 		}
 
+		// A callback that pages by key answers `rows` and the `cursor` the
+		// next batch starts after.
+		if ( is_array( $data ) && ! array_is_list( $data ) && array_key_exists( 'rows', $data ) ) {
+			$cursor = $data['cursor'] ?? null;
+			$data   = (array) $data['rows'];
+
+			if ( null !== $cursor ) {
+				$config['cursors']             = (array) ( $config['cursors'] ?? [] );
+				$config['cursors'][ $batch + 1 ] = $cursor;
+
+				set_transient( self::export_key( $export_token ), $config, HOUR_IN_SECONDS );
+			}
+		}
+
 		// Use headers from transient (already resolved) or from export config
 		$headers = $config['headers'] ?? $export_config['headers'] ?? [];
 		$report->write_csv_batch( $config['file_path'], $data, $batch === 0, $headers );
 
-		$processed_items = ( $batch * self::BATCH_SIZE ) + count( $data );
-		$is_complete     = $processed_items >= $config['total_items'] || count( $data ) < self::BATCH_SIZE;
+		$processed_items = ( $batch * $size ) + count( $data );
+		$is_complete     = $processed_items >= $config['total_items'] || count( $data ) < $size;
 
 		$response = [
 			'success'         => true,
@@ -169,6 +188,22 @@ trait ExportEndpoints {
 		}
 
 		return new WP_REST_Response( $response );
+	}
+
+	/**
+	 * How many rows an export writes per request: its config's
+	 * `batch_size`, or RestApi::BATCH_SIZE.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array<string, mixed> $export_config The export.
+	 *
+	 * @return int
+	 */
+	private static function batch_size( array $export_config ): int {
+		$size = (int) ( $export_config['batch_size'] ?? 0 );
+
+		return $size > 0 ? $size : self::BATCH_SIZE;
 	}
 
 	/**

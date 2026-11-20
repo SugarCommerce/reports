@@ -191,6 +191,32 @@ range and the component -- or whatever its `render_callback` prints.
 script fills in later. A component with `ajax_refresh` false is left out of
 the in-place refresh.
 
+## Exports of many rows
+
+An export is written a batch at a time, each batch its own request: 1,000
+rows (`RestApi::BATCH_SIZE`), or the export's own `batch_size`. Its
+`data_callback` is handed the period, the filters, `limit` and `offset` --
+and `after`, the cursor the previous batch answered, when it answered one.
+Read by `offset`, the hundredth batch counts its way past 99,000 rows
+first; read by key, every batch costs the same.
+
+```php
+'data_callback' => function ( array $args ): array {
+	$rows = my_plugin_orders(
+		[
+			'id_after' => $args['after'] ?? 0, // null on the first batch.
+			'number'   => $args['limit'],
+		]
+	);
+
+	// Plain rows are paged by offset, as before.
+	return [
+		'rows'   => $rows,
+		'cursor' => [] === $rows ? null : end( $rows )['id'],
+	];
+},
+```
+
 ## Built only when it is needed
 
 A report is registered on every request, because its figures arrive over

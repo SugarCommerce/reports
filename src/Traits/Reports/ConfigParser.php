@@ -385,6 +385,8 @@ trait ConfigParser {
 			// without one — listing it here so the shape an export must have
 			// is visible in one place rather than only in the error.
 			'total_callback' => null,
+			// Rows a request; RestApi::BATCH_SIZE when not said.
+			'batch_size'    => 0,
 			'columns'       => [],
 			'filters'       => [],
 			'button_text'   => __( 'Export CSV', 'sugarcommerce' ),

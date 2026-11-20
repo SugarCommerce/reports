@@ -86,9 +86,10 @@ class RestApi {
 	private static bool $registered = false;
 
 	/**
-	 * Export batch size.
+	 * Rows an export writes per request, unless its config says
+	 * `batch_size`.
 	 */
-	const BATCH_SIZE = 100;
+	const BATCH_SIZE = 1000;
 
 /**
 	 * Get date range from request parameters.

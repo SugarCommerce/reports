@@ -24,6 +24,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', __DIR__ . '/' );
 }
 
+if ( ! defined( 'HOUR_IN_SECONDS' ) ) {
+	define( 'HOUR_IN_SECONDS', 3600 );
+}
+
 /*
  * Declared before the kit's stubs, which have a `current_user_can` that always
  * says yes. Fine for a field library; useless for testing that a REST endpoint
