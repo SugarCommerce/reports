@@ -12,8 +12,8 @@ declare( strict_types=1 );
 
 namespace SugarCommerce\Reports\Traits\Reports;
 
-use SugarCommerce\Dates\Preset;
-use SugarCommerce\Dates\Range;
+use SugarCommerce\Dates\Models\Preset;
+use SugarCommerce\Dates\Models\Range;
 use SugarCommerce\Dates\Site;
 use SugarCommerce\Reports\Format;
 

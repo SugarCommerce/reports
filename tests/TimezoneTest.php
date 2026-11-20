@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace SugarCommerce\Reports\Tests;
 
-use SugarCommerce\Dates\Preset;
+use SugarCommerce\Dates\Models\Preset;
 use SugarCommerce\Reports\Registry;
 use SugarCommerce\Reports\Reports;
 use SugarCommerce\Reports\RestApi;
